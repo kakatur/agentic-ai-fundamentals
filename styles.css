@@ -155,7 +155,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === HERO === */
 .hero {
-  padding: 80px 0;
+  padding: 48px 0 40px;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
   border-bottom: 1px solid var(--border-color);
 }
@@ -169,7 +169,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero-title {
   font-size: clamp(32px, 5vw, 56px);
   font-weight: 700;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -179,7 +179,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero-subtitle {
   font-size: clamp(16px, 2.5vw, 20px);
   color: var(--text-secondary);
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   line-height: 1.7;
 }
 
@@ -187,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: center;
   gap: 48px;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
@@ -239,7 +239,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === INSTRUCTOR SECTION === */
 .instructor-intro {
-  padding: 60px 0;
+  padding: 40px 0;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 }
@@ -247,7 +247,7 @@ h1, h2, h3, h4, h5, h6 {
 .instructor-card-compact {
   max-width: 900px;
   margin: 0 auto;
-  padding: 40px;
+  padding: 32px;
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -369,7 +369,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === LEARNING PATHS === */
 .learning-paths {
-  padding: 80px 0;
+  padding: 60px 0;
 }
 
 .learning-paths h2 {
@@ -436,7 +436,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === MODULES === */
 .modules-section {
-  padding: 80px 0;
+  padding: 60px 0;
   background: var(--bg-secondary);
 }
 
@@ -761,7 +761,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === PROJECTS === */
 .projects-section {
-  padding: 80px 0;
+  padding: 60px 0;
 }
 
 .projects-section h2 {
@@ -870,7 +870,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === RESOURCES === */
 .resources-section {
-  padding: 80px 0;
+  padding: 60px 0;
   background: var(--bg-secondary);
 }
 
@@ -992,7 +992,7 @@ h1, h2, h3, h4, h5, h6 {
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hero {
-    padding: 60px 0;
+    padding: 40px 0;
   }
 
   .hero-stats {
@@ -1003,7 +1003,7 @@ h1, h2, h3, h4, h5, h6 {
   .modules-section,
   .projects-section,
   .resources-section {
-    padding: 60px 0;
+    padding: 48px 0;
   }
 
   .modules-grid,
