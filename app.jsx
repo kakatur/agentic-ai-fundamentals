@@ -42,6 +42,7 @@ function App() {
 
       <main className="main-content">
         <Hero />
+        <InstructorSection />
 
         <section className="search-section">
           <div className="container">
@@ -210,6 +211,46 @@ function Hero() {
             </svg>
             Subscribe on YouTube
           </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InstructorSection() {
+  return (
+    <section className="instructor-intro">
+      <div className="container">
+        <div className="instructor-card-compact">
+          <div className="instructor-info">
+            <h3 className="instructor-name">Krishna Kakatur</h3>
+            <p className="instructor-bio">
+              As a Data and Agentic AI leader, I build platforms that make trusted data accessible across organizations.
+              I've led the strategy, design, and implementation of modern data, AI, and analytics platforms at scale.
+              My focus is on creating reliable, governed ecosystems where teams own their data and leverage self-service
+              capabilities to unlock value through intelligent automation and agentic AI solutions.
+            </p>
+            <div className="instructor-links">
+              <a href="https://www.linkedin.com/in/kkakatur/" target="_blank" rel="noopener noreferrer" className="social-link">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"></path>
+                </svg>
+                LinkedIn
+              </a>
+              <a href="https://github.com/kakatur" target="_blank" rel="noopener noreferrer" className="social-link">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2A10 10 0 002 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"></path>
+                </svg>
+                GitHub
+              </a>
+              <a href="https://medium.com/@kakatur" target="_blank" rel="noopener noreferrer" className="social-link">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"></path>
+                </svg>
+                Medium
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
