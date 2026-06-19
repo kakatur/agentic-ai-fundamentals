@@ -402,7 +402,7 @@ window.MODULES = [
         title: "Understanding Context Windows & Token Budgets",
         description: "Master context window limits, token budgeting, and the 'lost in the middle' problem.",
         duration: "35 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=SFQJH-91cZY"
       },
       {
         title: "Context Structure: SYSTEM/CONTEXT/USER Separation",
