@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Course Lesson"
+  short_description: "Build and produce a complete course lesson"
+  default_prompt: "Use $create-lesson to create lesson 09.02 from public content through production narration."
