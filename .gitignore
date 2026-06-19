@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Video production belongs in the private BTS repository.
+**/video/
+**/build/
+**/output/
+*.aiff
+*.wav
+*.mp3
+*.mp4
