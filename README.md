@@ -87,7 +87,7 @@ agentic-ai-fundamentals/
 ├── data.js             # Course content data
 ├── styles.css          # Styling
 ├── CNAME               # Custom domain configuration
-├── GITHUB_PAGES_SETUP.md  # Setup instructions
+├── 08_01_.../          # Learner-facing lesson material and code
 └── README.md           # This file
 ```
 
