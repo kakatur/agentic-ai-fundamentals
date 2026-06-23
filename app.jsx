@@ -325,13 +325,23 @@ function VideoCard({ video, index, moduleColor }) {
   return (
     <div className={`video-card ${isPlaceholder ? 'placeholder' : ''}`}>
       <div className={`video-thumbnail color-${moduleColor}`}>
+        {video.thumbnailUrl && (
+          <img
+            src={video.thumbnailUrl}
+            alt=""
+            className="video-thumbnail-image"
+            loading="lazy"
+          />
+        )}
         <div className="video-number">{index}</div>
         {isPlaceholder ? (
           <div className="coming-soon">Coming Soon</div>
         ) : (
-          <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
+          <div className="play-icon-background" aria-hidden="true">
+            <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
         )}
       </div>
       <div className="video-info">
