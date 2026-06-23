@@ -1,300 +1,137 @@
-# Quick Reference: Context Windows & Token Budgets
+# Quick Reference: Context Windows and Token Budgets
 
-## Token Counting Cheat Sheet
+## Budget equation
 
-### Character to Token Ratios
-- **English text**: ~4 characters per token
-- **Code**: ~2.5-3 characters per token
-- **JSON/structured**: ~3 characters per token
-- **One page**: ~400-500 tokens
+```text
+instructions
++ tools
++ retrieval
++ history
++ current input
++ reserved output
++ safety margin
+<= application budget
+```
 
-### Example Model Context Limits
+Reserve fixed components first. Allocate flexible history and retrieval from
+what remains.
 
-Verified June 18, 2026. Recheck model cards before using these values in
-production.
+## Safe request flow
 
-| Model | Context Window | ~Pages |
-|-------|---------------|--------|
-| GPT-5.5 | 1,050,000 tokens | ~2,100-2,600 |
-| GPT-5.4 mini | 400,000 tokens | ~800-1,000 |
+```text
+1. Classify the task.
+2. Reserve instructions, current input, output, and margin.
+3. Select and deduplicate retrieval.
+4. Compact history in semantic units.
+5. Assemble the exact request.
+6. Count again.
+7. Reduce deterministically or reject.
+8. Record actual usage and quality.
+```
 
-See [OpenAI models](https://developers.openai.com/api/docs/models),
-[Claude models](https://platform.claude.com/docs/en/about-claude/models/overview),
-and [Gemini models](https://ai.google.dev/gemini-api/docs/models).
+## Counting rules
 
-## Quick Token Counting
+- Character ratios are planning estimates only.
+- Count the formatted request, not isolated text fields.
+- Include tools, message structure, images, and files.
+- Use provider counting APIs near hard boundaries.
+- Record actual input and output usage after execution.
+
+OpenAI Responses example, verified June 23, 2026:
 
 ```python
-# OpenAI: exact count for a complete Responses API input
-from openai import OpenAI
-client = OpenAI()
-response = client.responses.input_tokens.count(
-    model="gpt-5.5",
-    input=text,
+count = client.responses.input_tokens.count(
+    model=model,
+    instructions=instructions,
+    tools=tools,
+    input=input_items,
 )
-tokens = response.input_tokens
-
-# OpenAI: local text-only estimate
-import tiktoken
-encoding = tiktoken.encoding_for_model("gpt-5.4-mini")
-tokens = len(encoding.encode(text))
-
-# Anthropic
-from anthropic import Anthropic
-client = Anthropic()
-response = client.messages.count_tokens(
-    model="claude-sonnet-4-6",
-    messages=[{"role": "user", "content": text}],
-)
-tokens = response.input_tokens
-
-# Rough estimate (when you can't use official tools)
-tokens = len(text) // 4
+input_tokens = count.input_tokens
 ```
 
-## Context Budget Templates
+Source:
+[OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
 
-### Small Application Budget (16K tokens)
-```
-System prompt:        1,000 tokens  (6%)
-Tool definitions:     2,000 tokens  (12%)
-Retrieval:            5,000 tokens  (31%)
-Conversation history: 5,000 tokens  (31%)
-Response budget:      2,000 tokens  (12%)
-Safety buffer:        1,384 tokens  (8%)
-────────────────────────────────────────
-TOTAL:               16,384 tokens  (100%)
-```
+## History policy chooser
 
-### Medium Application Budget (128K tokens)
-```
-System prompt:        2,000 tokens  (1.5%)
-Tool definitions:     5,000 tokens  (4%)
-Retrieval:           50,000 tokens  (39%)
-Conversation history: 50,000 tokens (39%)
-Response budget:     15,000 tokens  (12%)
-Safety buffer:        6,000 tokens  (4.5%)
-────────────────────────────────────────
-TOTAL:              128,000 tokens  (100%)
-```
+| Need | Policy | Risk |
+|---|---|---|
+| Recent conversational continuity | Sliding window | Loses early constraints |
+| Coherent question/answer turns | Preserve pairs | Simple grouping may miss tool dependencies |
+| Original goal plus recent work | First plus recent | Drops middle decisions |
+| Long-running task state | Structured summary plus recent turns | Summary drift |
 
-### Large Application Budget (200K tokens)
-```
-System prompt:        2,000 tokens  (1%)
-Tool definitions:     5,000 tokens  (2.5%)
-Retrieval:           80,000 tokens  (40%)
-Conversation history: 90,000 tokens (45%)
-Response budget:     20,000 tokens  (10%)
-Safety buffer:        3,000 tokens  (1.5%)
-────────────────────────────────────────
-TOTAL:              200,000 tokens  (100%)
-```
+Preserve assistant tool calls with their corresponding tool results.
 
-## Truncation Decision Tree
+## Retrieval policy chooser
 
-```
-Need to reduce context?
-├─ Need ALL documents represented?
-│  └─ Use PROPORTIONAL truncation
-│     (trim each document equally)
-│
-├─ Want only highest quality?
-│  └─ Use TOP-N truncation
-│     (keep most relevant only)
-│
-├─ Large context (>10K tokens)?
-│  └─ Use POSITION-AWARE truncation
-│     (combat "lost in the middle")
-│
-└─ Documents are redundant?
-   └─ Use DIVERSE truncation
-      (maximize coverage)
+| Need | Policy | Risk |
+|---|---|---|
+| Best evidence only | Top-N packing | May reduce source coverage |
+| Every source represented | Proportional truncation | Can cut away key sentences |
+| Strong evidence near query | Position-aware ordering | Position cannot fix weak evidence |
+| Broad, non-redundant coverage | Diversity-aware selection | Requires meaningful similarity |
+
+Select for relevance before enforcing the final numerical limit.
+
+## Overflow policy
+
+```text
+Does the final request fit?
+├─ Yes → execute and record actual usage
+└─ No
+   ├─ Remove optional tools
+   ├─ Reduce or rerank retrieval
+   ├─ Compact older history
+   ├─ Split the task
+   ├─ Route explicitly
+   └─ Reject if mandatory components still do not fit
 ```
 
-## Lost in the Middle - Best Practices
+Never rely on silent truncation for correctness-sensitive workflows.
 
-### ✅ DO
-- Place critical instructions at the **START** (system prompt)
-- Place most relevant docs at the **END** (near user query)
-- Place current user question at the **END**
-- Use explicit references: "See the document at the end..."
+## Lost-in-the-middle checks
 
-### ❌ DON'T
-- Place important information only in the middle
-- Assume the model reads everything equally
-- Bury critical facts in long documents
+- Keep stable instructions near the beginning.
+- Keep the current request near the end.
+- Place strongest evidence close to the question.
+- Test multiple context lengths and evidence positions.
+- Repeat tests after changing models or prompt structure.
 
-## Cost Optimization Rules of Thumb
+## Production metrics
 
-Pricing, cache discounts, long-context premiums, and service tiers change.
-Use the current [OpenAI pricing](https://developers.openai.com/api/docs/pricing)
-and the equivalent official page for your provider.
-
-### Quick Cost Calculations
-```python
-# Prices should come from reviewed configuration.
-input_cost = (50_000 / 1_000_000) * input_price_per_million
-output_cost = (2_000 / 1_000_000) * output_price_per_million
-total_cost = input_cost + output_cost
-
-# At 10K requests/day
-daily_cost = total_cost * 10_000
-monthly_cost = daily_cost * 30
-```
-
-### Cost Reduction Strategies
-1. **Use prompt caching** when the provider and request shape support it
-2. **Right-size requests and models** using measured quality, latency, and cost
-3. **Compress aggressively**: Summarize, deduplicate, truncate
-4. **Smart routing**: Simple queries → small models, complex → large models
-5. **Batch similar requests**: Reuse context across requests
-
-## Message Format Overhead
-
-Message wrappers, tools, images, and provider-added tokens vary by model and
-API shape. Fixed per-message constants are rough teaching estimates only. Use
-the provider's token-counting API for preflight validation.
-
-### Example
-```python
-raw_tokens = sum(local_count(message["content"]) for message in messages)
-request_tokens = provider_count(messages=messages, tools=tools)
-overhead = request_tokens - raw_tokens
-```
-
-## Memory Management Patterns
-
-### Sliding Window
-```python
-# Keep last N messages
-WINDOW_SIZE = 10
-history = history[-WINDOW_SIZE:]
-```
-**Use when**: Conversations are independent, recent context matters most
-
-### Selective Retention
-```python
-# Keep first N and last M
-first_n = history[:2]   # Initial context
-last_m = history[-4:]   # Recent context
-history = first_n + last_m
-```
-**Use when**: Initial context is critical, middle is less important
-
-### Summarization
-```python
-# Summarize old messages
-if len(history) > 20:
-    summary = llm.summarize(history[:10])
-    history = [{"role": "system", "content": summary}] + history[10:]
-```
-**Use when**: You need to preserve information but reduce tokens
-
-### Preserve Pairs
-```python
-# Never break Q&A pairs
-pairs = [(history[i], history[i+1]) for i in range(0, len(history), 2)]
-# Truncate pairs, not individual messages
-```
-**Use when**: Conversation flow is important
-
-## Monitoring Metrics
-
-### Essential Metrics
 ```python
 metrics = {
-    "avg_input_tokens": ...,        # Track average request size
-    "avg_output_tokens": ...,       # Track average response size
-    "p95_input_tokens": ...,        # Catch outliers
-    "p99_input_tokens": ...,        # Catch extreme outliers
-    "context_utilization_pct": ..., # Used / available
-    "cost_per_request": ...,        # Track spending
-    "requests_truncated": ...,      # How often you truncate
+    "input_tokens": ...,
+    "output_tokens": ...,
+    "reserved_output_tokens": ...,
+    "context_utilization_pct": ...,
+    "history_messages_removed": ...,
+    "retrieval_chunks_removed": ...,
+    "overflow_rejected": ...,
+    "latency_ms": ...,
+    "cost": ...,
+    "quality_score": ...,
 }
 ```
 
-### Alert Thresholds
-- **P95 utilization > 85%**: Risk of hitting limits
-- **P99 utilization > 95%**: Definitely hitting limits
-- **Avg utilization < 40%**: Overprovisioned, use smaller model
-- **Cost/request > 2x baseline**: Investigate token bloat
+Review P50, P95, and P99 distributions. Optimize quality, latency, and cost
+together.
 
-## Common Mistakes to Avoid
+## Common mistakes
 
-1. **❌ Using rough estimates as hard production limits**
-   - Different models tokenize differently
-   - "Words * 1.3" is NOT accurate
+- Counting raw text only.
+- Reserving no output capacity.
+- Treating the advertised context limit as a utilization target.
+- Dropping arbitrary messages instead of semantic units.
+- Injecting every retrieved chunk.
+- Assuming summaries are lossless.
+- Hard-coding model limits and prices.
+- Logging truncation counts without recording what policy made the decision.
 
-2. **❌ Not accounting for message overhead**
-   - Wrappers and tools add model-specific tokens
-   - Count the complete request instead of relying on a fixed constant
+## Commands
 
-3. **❌ Ignoring the "lost in the middle" problem**
-   - Middle content gets ignored
-   - Test your document positioning
-
-4. **❌ Fixed budgets for all queries**
-   - Simple queries don't need 10K retrieval
-   - Complex queries need more than 2K
-
-5. **❌ Not monitoring actual usage**
-   - You can't optimize what you don't measure
-   - Track min/avg/max/p95/p99
-
-6. **❌ Forgetting the safety buffer**
-   - Always reserve 5-10% for variance
-   - Token counts can fluctuate slightly
-
-7. **❌ Using massive context models unnecessarily**
-   - Capacity, quality, latency, and token price are separate dimensions
-   - Most queries do not benefit from filling a massive context window
-
-## Production Checklist
-
-- [ ] Using provider counting APIs for complete production requests
-- [ ] Adding 5-10% safety buffer to calculations
-- [ ] Counting message overhead, not just content
-- [ ] Testing "lost in the middle" placement strategy
-- [ ] Implementing dynamic budget allocation
-- [ ] Monitoring p95/p99 token usage
-- [ ] Tracking cost per request
-- [ ] Testing with maximum conversation lengths
-- [ ] Handling context overflow gracefully
-- [ ] Logging truncation events for analysis
-- [ ] A/B testing truncation strategies
-- [ ] Right-sizing model selection based on usage
-
-## Quick Troubleshooting
-
-### Problem: Requests failing with context limit errors
-**Solutions**:
-1. Add logging to see actual token counts
-2. Verify you're using correct tokenizer
-3. Check if tool definitions are unexpectedly large
-4. Implement aggressive truncation
-5. Consider upgrading to larger context model
-
-### Problem: High costs
-**Solutions**:
-1. Check p95 context utilization
-2. If <50%, downgrade to smaller context model
-3. Implement prompt caching when supported
-4. Reduce retrieval chunks
-5. Compress conversation history
-6. Route simple queries to cheaper models
-
-### Problem: Poor answer quality after truncation
-**Solutions**:
-1. Test different truncation strategies
-2. Increase retrieval budget for complex queries
-3. Use position-aware placement
-4. Preserve more conversation history
-5. Upgrade to larger context model
-
-### Problem: "Lost in the middle" issues
-**Solutions**:
-1. Move critical docs to end of context
-2. Add explicit references to document positions
-3. Use fewer, higher-quality documents
-4. Repeat critical information
-5. Test with needle-in-haystack benchmarks
+```bash
+python3 demo.py
+python3 -m pytest -q
+```
