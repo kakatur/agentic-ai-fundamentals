@@ -205,9 +205,23 @@ Measure:
 - Quality at equal cost, not only maximum quality
 
 Anthropic reported strong gains for its breadth-first research workload, while
-also reporting substantially higher token use and warning that tightly coupled
-domains are a poor fit. That is evidence for one workload, not a universal
-multi-agent performance law.
+also reporting substantially higher token use (about 4× for basic agents vs.
+chat, 15× for multi-agent research) and warning that tightly coupled domains
+are a poor fit. That is evidence for one workload, not a universal multi-agent
+performance law.
+
+**Example cost comparison** (GPT-4 Turbo at $0.01/1K input, $0.03/1K output):
+
+| Architecture | Tokens In | Tokens Out | Cost | Quality | Use Case |
+|---|---|---|---|---|---|
+| Single agent | 8K | 2K | $0.14 | Good | Policy lookup with ticket creation |
+| Multi-agent (3 specialists) | 24K | 6K | $0.42 | Better | Cross-domain compliance review (legal, security, finance) |
+| Multi-agent (5 parallel researchers) | 60K | 15K | $1.05 | Best | Market research covering 5 independent regions |
+
+A $5,000 consulting engagement may justify $50 in model costs for comprehensive
+research. A $0.50 support ticket does not justify $5 in multi-agent
+orchestration. Multi-agent design is an economic decision as well as a
+technical one.
 
 ### Context isolation and information loss trade off
 
