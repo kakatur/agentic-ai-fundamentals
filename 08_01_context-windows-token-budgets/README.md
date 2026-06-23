@@ -54,7 +54,7 @@ from openai import OpenAI
 
 client = OpenAI()
 count = client.responses.input_tokens.count(
-    model="gpt 5.5",
+    model="gpt-5.5",
     instructions="Answer from the supplied evidence.",
     tools=[tool_schema],
     input=messages,
