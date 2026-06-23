@@ -68,15 +68,19 @@ For each narration scene, define:
 - `narration`
 - optional `actions` for narration-aligned highlights, pointer movement, or
   temporary ink annotations
+- optional `sound_cues` that reference reusable `intro`, `section-transition`,
+  or `keyword-soft` assets and identify the related action and placement
 - optional `code_file`
 - optional `code_lines`
 
 Target 130–150 spoken words per minute and roughly 12–20 minutes for a normal
 lesson. Go longer only when the learning objectives require it. Use short,
 natural sentences and speak directly to the viewer with a warm, confident
-tone. Keep one idea per scene and use concrete examples before abstraction.
-Remove filler, hype, unnecessary previews, repeated points, and redundant
-summaries.
+tone. Follow the coffee-shop rule: explain the topic as you would to an
+interested friend, using purposeful bridges such as “let’s say,” “now,” and
+“here’s the useful part” when they establish context or guide attention. Keep
+one idea per scene and use concrete examples before abstraction. Remove empty
+filler, hype, unnecessary previews, repeated points, and redundant summaries.
 
 Use the public lesson's terminology. Read short, relevant code fragments when
 they orient the viewer, then explain their behavior, purpose, and trade-offs.
@@ -106,19 +110,24 @@ Start only after approved `audio/audio.mp3` exists.
 6. Synchronize restrained visual actions with the narration: reveal bullets,
    highlight key phrases or code lines, dim inactive content, and use pointer
    or temporary ink annotations where they clarify the explanation.
-7. Show `agenticaifundamentals.com` at bottom left,
+7. Add restrained, licensed sound cues when specified: a 1–2 second opening
+   cue, 500 ms–1 second section transitions, and 100–300 ms keyword accents.
+   Place them in pauses or well below narration; do not add a transition sound
+   between every slide.
+8. Show `agenticaifundamentals.com` at bottom left,
    `https://github.com/kakatur/agentic-ai-fundamentals` at bottom center, and
    `<lesson title> • Chapter <module.video>` at bottom right.
-8. Produce 1920×1080, 30 FPS, H.264 video with AAC audio normalized near
+9. Produce 1920×1080, 30 FPS, H.264 video with AAC audio normalized near
    -16 LUFS.
-9. Generate:
+10. Generate:
    - `deliverables/{slug}-1080p.mp4`
    - `deliverables/{slug}-1080p.en.srt`
    - `deliverables/youtube-chapters.txt`
    - `deliverables/thumbnail-1920x1080.png`
    - `deliverables/youtube-title-description.txt`
-10. Run the production validation script when present.
-11. Inspect representative opening, concept, code, demo, test, and closing
+11. Run the production validation script when present.
+12. Review the final mix with headphones and laptop speakers, then inspect
+   representative opening, concept, code, demo, test, and closing
    frames.
 
 Never reuse alignment, caption timing, or chapter timing after audio changes.
