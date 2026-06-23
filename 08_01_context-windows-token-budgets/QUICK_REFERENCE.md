@@ -41,7 +41,7 @@ OpenAI Responses example:
 
 ```python
 count = client.responses.input_tokens.count(
-    model="gpt-4-turbo",  # or "gpt-4", "gpt-4o"
+    model=model,
     instructions=instructions,
     tools=tools,
     input=input_items,
@@ -49,8 +49,8 @@ count = client.responses.input_tokens.count(
 input_tokens = count.input_tokens
 ```
 
-Last verified: June 23, 2026  
-Source: [OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
+Source:
+[OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
 
 ## History policy chooser
 
