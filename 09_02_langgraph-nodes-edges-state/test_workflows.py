@@ -20,7 +20,7 @@ def test_low_risk_request_uses_fast_path():
 
 def test_high_risk_request_uses_review_path():
     result = build_support_graph().invoke(
-        initial_state("Please investigate this payment refund")
+        initial_state("Please investigate this PAYMENT refund.")
     )
 
     assert result["route"] == "review_path"

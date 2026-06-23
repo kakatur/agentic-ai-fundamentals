@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import operator
+import re
 from typing import Annotated, Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
@@ -33,9 +34,10 @@ def assess_risk(state: SupportState) -> dict:
     """Assign a simple, deterministic risk score for the routing example."""
 
     high_risk_terms = {"refund", "security", "breach", "payment", "legal"}
-    matched_terms = high_risk_terms.intersection(
-        state["normalized_request"].split()
+    request_terms = set(
+        re.findall(r"\b[\w'-]+\b", state["normalized_request"])
     )
+    matched_terms = high_risk_terms.intersection(request_terms)
     score = min(len(matched_terms) * 4, 10)
     route: Literal["fast_path", "review_path"] = (
         "review_path" if score >= 4 else "fast_path"

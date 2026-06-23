@@ -401,8 +401,8 @@ window.MODULES = [
       {
         title: "Understanding Context Windows & Token Budgets",
         description: "Master context window limits, token budgeting, and the 'lost in the middle' problem.",
-        duration: "35 min",
-        url: "https://www.youtube.com/watch?v=SFQJH-91cZY"
+        duration: "19 min",
+        url: "https://youtu.be/JWbGjtVFeoM"
       },
       {
         title: "Context Structure: SYSTEM/CONTEXT/USER Separation",
@@ -465,8 +465,8 @@ window.MODULES = [
       {
         title: "LangGraph Fundamentals: Nodes, Edges & State",
         description: "Master LangGraph basics: StateGraph, nodes, edges, and state management for agent orchestration.",
-        duration: "70 min",
-        url: "PLACEHOLDER"
+        duration: "18 min",
+        url: "https://youtu.be/vdsG9YqIMU0"
       },
       {
         title: "Common Multi-Agent Patterns",

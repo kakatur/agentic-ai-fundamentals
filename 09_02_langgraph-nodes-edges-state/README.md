@@ -19,6 +19,58 @@ Primary references:
 
 ## Core concepts and mental model
 
+### When to use a graph (and when not to)
+
+A graph is useful when your workflow includes:
+
+- **Branching**: Different paths based on runtime decisions
+- **Parallel execution**: Independent work that can run concurrently
+- **Persistence**: State must survive across process restarts or pauses
+- **Human intervention**: Approval, review, or input breaks execution flow
+- **Observability**: You need to inspect, debug, or audit the execution path
+
+**When NOT to use a graph**:
+
+- ❌ Linear 3-step ETL: `read → transform → write` is clearer as three functions
+- ❌ Single API call + parse: One HTTP request doesn't need graph machinery
+- ❌ Simple retry loop: A `for` loop with `try/except` is more direct
+- ❌ Pure data transformation: Map/reduce operations don't need state management
+
+**Decision rule**: If you can draw the control flow as a straight line with no
+branches, loops, or pauses, use ordinary functions. Reach for a graph when the
+topology itself carries meaning.
+
+### Workflow topology
+
+The support workflow demonstrates conditional routing:
+
+```text
+START
+  │
+  ▼
+normalize_request
+  │
+  ▼
+assess_risk
+  │
+  ├── low risk ──> fast_path ──┐
+  │                            │
+  └── high risk -> review_path ├──> finalize ──> END
+                               │
+```
+
+The parallel workflow demonstrates fan-out and join:
+
+```text
+                       ┌─> research_reliability ─┐
+START ─────────────────┤                         ├─> synthesize ─> END
+                       └─> research_operations ──┘
+```
+
+These structures make execution paths visible. A conditional branch shows where
+decisions happen. A join shows where parallel work must complete before
+continuing.
+
 ### State is the shared snapshot
 
 A `StateGraph` is parameterized by a state schema. A `TypedDict` is the normal
@@ -223,6 +275,7 @@ Key lessons:
 - `SupportState` defines shared channels.
 - Nodes return partial state updates.
 - `audit_log` uses a reducer.
+- Risk scoring tokenizes text so punctuation does not hide a high-risk term.
 - A conditional edge selects exactly one branch.
 - Both branches converge on a common finalizer.
 
@@ -246,6 +299,45 @@ Tests:
 - The exact node path exposed by update streaming.
 - Reducer behavior across parallel branches.
 - Join behavior before synthesis.
+
+### Failure and retry behavior (not yet implemented)
+
+A production graph should handle node failures explicitly. This lesson uses
+deterministic functions, so failures are not demonstrated. In a real workflow:
+
+- A node that raises an exception does not update state.
+- The graph execution stops at that node.
+- With checkpointing, the workflow can resume from the failed node after a fix.
+- Side-effecting nodes (payment, notifications) need idempotency keys to prevent
+  duplicate operations on retry.
+
+Example failure handling (not in this lesson's code):
+
+```python
+def charge_payment(state: PaymentState) -> dict:
+    """Idempotent payment node using operation ID from state."""
+    if state.get("payment_completed"):
+        return {}  # Already processed, skip
+    
+    try:
+        result = payment_api.charge(
+            amount=state["amount"],
+            idempotency_key=state["operation_id"]
+        )
+        return {
+            "payment_completed": True,
+            "receipt": result.receipt_id,
+            "audit_log": [f"charged {state['amount']}"]
+        }
+    except PaymentError as e:
+        return {
+            "payment_completed": False,
+            "audit_log": [f"payment failed: {e}"]
+        }
+        # Graph execution stops here; manual intervention or retry needed
+```
+
+The operation ID is generated before the payment node runs, making retries safe.
 
 ## Production considerations and trade-offs
 
