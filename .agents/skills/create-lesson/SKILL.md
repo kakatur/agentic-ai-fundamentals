@@ -91,6 +91,12 @@ are complete.
 Use visual actions to direct attention or explain relationships, not as
 decoration.
 
+The TTS script must contain only text that should be spoken by the narrator.
+Do not include scene labels such as `Scene 1`, scene titles, markdown
+separators, production comments, or other metadata in `tts-script.txt`. Scene
+titles and sections belong in `narration.json` for rendering, chapters, and
+editorial structure, not in recorded narration.
+
 Stop after Phase 2 unless approved `audio/audio.mp3` already exists or the user
 explicitly says it is ready. Tell the user that approved audio is the input
 required for Phase 3.
@@ -129,6 +135,11 @@ Start only after approved `audio/audio.mp3` exists.
 12. Review the final mix with headphones and laptop speakers, then inspect
    representative opening, concept, code, demo, test, and closing
    frames.
+
+Before approving final deliverables, inspect representative frames for poor
+diagram geometry, crossing or confusing arrows, footer overlap, presenter
+overlay collisions, tiny text, and any stale terminology. Fix visual issues and
+rerender before declaring the video complete.
 
 Never reuse alignment, caption timing, or chapter timing after audio changes.
 Regenerate all downstream artifacts from the new master audio.

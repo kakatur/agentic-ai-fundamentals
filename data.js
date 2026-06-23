@@ -661,17 +661,17 @@ window.MODULES = [
   },
   {
     id: 13,
-    title: "LLMOps & Observability",
+    title: "LLM-Ops & Observability",
     color: "sky",
     duration: "~6 hours",
     videoCount: 6,
     description: "Operationalize your agents with monitoring, tracing, and continuous improvement.",
     videos: [
       {
-        title: "Introduction to LLMOps",
-        description: "Understand LLMOps principles, the deployment lifecycle, and production challenges.",
-        duration: "45 min",
-        url: "PLACEHOLDER"
+        title: "Introduction to LLM-Ops",
+        description: "Understand LLM-Ops principles, the deployment lifecycle, and production challenges.",
+        duration: "16 min",
+        url: "https://youtu.be/9gmstSp5FoA"
       },
       {
         title: "Tracing with LangSmith & LangFuse",
