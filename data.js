@@ -459,8 +459,8 @@ window.MODULES = [
       {
         title: "When to Use Multi-Agent Systems (And When Not To)",
         description: "Decision framework: single-agent-with-tools vs multi-agent architecture for your use case.",
-        duration: "45 min",
-        url: "PLACEHOLDER"
+        duration: "21 min",
+        url: "https://youtu.be/ocwT9OFrHF4"
       },
       {
         title: "LangGraph Fundamentals: Nodes, Edges & State",
