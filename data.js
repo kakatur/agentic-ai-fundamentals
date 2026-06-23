@@ -402,7 +402,8 @@ window.MODULES = [
         title: "Understanding Context Windows & Token Budgets",
         description: "Master context window limits, token budgeting, and the 'lost in the middle' problem.",
         duration: "19 min",
-        url: "https://youtu.be/JWbGjtVFeoM"
+        url: "https://youtu.be/JWbGjtVFeoM",
+        thumbnailUrl: "https://i.ytimg.com/vi/JWbGjtVFeoM/maxresdefault.jpg"
       },
       {
         title: "Context Structure: SYSTEM/CONTEXT/USER Separation",
@@ -460,13 +461,15 @@ window.MODULES = [
         title: "When to Use Multi-Agent Systems (And When Not To)",
         description: "Decision framework: single-agent-with-tools vs multi-agent architecture for your use case.",
         duration: "21 min",
-        url: "https://youtu.be/ocwT9OFrHF4"
+        url: "https://youtu.be/ocwT9OFrHF4",
+        thumbnailUrl: "https://i.ytimg.com/vi/ocwT9OFrHF4/maxresdefault.jpg"
       },
       {
         title: "LangGraph Fundamentals: Nodes, Edges & State",
         description: "Master LangGraph basics: StateGraph, nodes, edges, and state management for agent orchestration.",
         duration: "18 min",
-        url: "https://youtu.be/vdsG9YqIMU0"
+        url: "https://youtu.be/vdsG9YqIMU0",
+        thumbnailUrl: "https://i.ytimg.com/vi/vdsG9YqIMU0/maxresdefault.jpg"
       },
       {
         title: "Common Multi-Agent Patterns",
