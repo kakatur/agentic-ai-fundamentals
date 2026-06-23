@@ -37,11 +37,11 @@ what remains.
 - Use provider counting APIs near hard boundaries.
 - Record actual input and output usage after execution.
 
-OpenAI Responses example, verified June 23, 2026:
+OpenAI Responses example:
 
 ```python
 count = client.responses.input_tokens.count(
-    model=model,
+    model="gpt-4-turbo",  # or "gpt-4", "gpt-4o"
     instructions=instructions,
     tools=tools,
     input=input_items,
@@ -49,8 +49,8 @@ count = client.responses.input_tokens.count(
 input_tokens = count.input_tokens
 ```
 
-Source:
-[OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
+Last verified: June 23, 2026  
+Source: [OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
 
 ## History policy chooser
 

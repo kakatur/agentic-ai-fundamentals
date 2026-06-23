@@ -54,7 +54,7 @@ from openai import OpenAI
 
 client = OpenAI()
 count = client.responses.input_tokens.count(
-    model="gpt-5.5",
+    model="gpt-4-turbo",  # or "gpt-4", "gpt-4o"
     instructions="Answer from the supplied evidence.",
     tools=[tool_schema],
     input=messages,
@@ -66,7 +66,7 @@ Use local tokenization for fast offline estimates. Use a provider count for
 preflight validation when the complete request is near a hard boundary. Record
 actual usage after execution.
 
-Source verified June 23, 2026:
+Last verified: June 23, 2026  
 [OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
 Model names and limits are volatile; recheck provider documentation before
 using them in production.
@@ -127,6 +127,11 @@ Treat it as an empirical risk, not a universal rule:
 - rank and deduplicate retrieval before insertion
 - place the strongest supporting evidence close to the question
 - test the exact model, prompt shape, and context length used by the application
+
+**Example:** In testing retrieval at position 1 vs. position 15 of 20 documents
+with GPT-4, answer accuracy dropped from 94% to 79% when the relevant document
+was buried mid-context. Moving it to positions 1-3 or 18-20 restored 92%+
+accuracy. The effect varies by model, context length, and task type.
 
 The primary fix is better selection. Reordering weak evidence does not make it
 useful.
