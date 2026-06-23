@@ -54,7 +54,7 @@ from openai import OpenAI
 
 client = OpenAI()
 count = client.responses.input_tokens.count(
-    model="gpt-4-turbo",  # or "gpt-4", "gpt-4o"
+    model="gpt 5.5",
     instructions="Answer from the supplied evidence.",
     tools=[tool_schema],
     input=messages,
@@ -66,7 +66,6 @@ Use local tokenization for fast offline estimates. Use a provider count for
 preflight validation when the complete request is near a hard boundary. Record
 actual usage after execution.
 
-Last verified: June 23, 2026  
 [OpenAI token counting](https://developers.openai.com/api/docs/guides/token-counting).
 Model names and limits are volatile; recheck provider documentation before
 using them in production.

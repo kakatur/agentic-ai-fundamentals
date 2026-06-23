@@ -9,8 +9,6 @@ the graph mechanics visible and makes every example runnable without API keys.
 Once these mechanics are clear, an LLM call is simply another node
 implementation.
 
-The examples were verified against LangGraph **1.2.6 on June 23, 2026**.
-
 Primary references:
 
 - [LangGraph Graph API overview](https://docs.langchain.com/oss/python/langgraph/graph-api)
