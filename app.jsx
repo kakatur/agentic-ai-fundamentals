@@ -321,44 +321,51 @@ function VideoList({ module, onClose }) {
 
 function VideoCard({ video, index, moduleColor }) {
   const isPlaceholder = video.url === "PLACEHOLDER";
+  const thumbnailContent = (
+    <>
+      {video.thumbnailUrl && (
+        <img
+          src={video.thumbnailUrl}
+          alt=""
+          className="video-thumbnail-image"
+          loading="lazy"
+        />
+      )}
+      <div className="video-number">{index}</div>
+      {isPlaceholder ? (
+        <div className="coming-soon">Coming Soon</div>
+      ) : (
+        <div className="play-icon-background" aria-hidden="true">
+          <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className={`video-card ${isPlaceholder ? 'placeholder' : ''}`}>
-      <div className={`video-thumbnail color-${moduleColor}`}>
-        {video.thumbnailUrl && (
-          <img
-            src={video.thumbnailUrl}
-            alt=""
-            className="video-thumbnail-image"
-            loading="lazy"
-          />
-        )}
-        <div className="video-number">{index}</div>
-        {isPlaceholder ? (
-          <div className="coming-soon">Coming Soon</div>
-        ) : (
-          <div className="play-icon-background" aria-hidden="true">
-            <svg className="play-icon" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-          </div>
-        )}
-      </div>
+      {isPlaceholder ? (
+        <div className={`video-thumbnail color-${moduleColor}`}>
+          {thumbnailContent}
+        </div>
+      ) : (
+        <a
+          href={video.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`video-thumbnail video-thumbnail-link color-${moduleColor}`}
+          aria-label={`Watch ${video.title}`}
+        >
+          {thumbnailContent}
+        </a>
+      )}
       <div className="video-info">
         <h4 className="video-title">{video.title}</h4>
         <p className="video-description">{video.description}</p>
         <div className="video-meta">
           <span className="duration">{video.duration}</span>
-          {!isPlaceholder && (
-            <a
-              href={video.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="watch-button"
-            >
-              Watch
-            </a>
-          )}
         </div>
       </div>
     </div>
