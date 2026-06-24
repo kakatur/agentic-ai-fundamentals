@@ -3,7 +3,6 @@ const { useState, useEffect, useRef } = React;
 function App() {
   const [selectedModule, setSelectedModule] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPath, setSelectedPath] = useState(null);
   const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
@@ -32,9 +31,16 @@ function App() {
     );
   });
 
-  const pathModules = selectedPath
-    ? window.MODULES.filter(m => window.LEARNING_PATH[selectedPath].modules.includes(m.id))
-    : null;
+  const showModuleVideos = (module) => {
+    setSelectedModule(module);
+    if (selectedModule?.id === module.id) {
+      requestAnimationFrame(() => {
+        document
+          .querySelector(".video-list-section")
+          ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
+  };
 
   return (
     <div className="app">
@@ -61,47 +67,16 @@ function App() {
           </div>
         </section>
 
-        <section className="learning-paths">
-          <div className="container">
-            <h2>Choose Your Learning Path</h2>
-            <div className="paths-grid">
-              {Object.keys(window.LEARNING_PATH).map(key => {
-                const path = window.LEARNING_PATH[key];
-                return (
-                  <button
-                    key={key}
-                    className={`path-card ${selectedPath === key ? 'active' : ''}`}
-                    onClick={() => setSelectedPath(selectedPath === key ? null : key)}
-                  >
-                    <h3>{path.title}</h3>
-                    <p>{path.description}</p>
-                    <div className="path-meta">
-                      <span className="badge">{path.modules.length} modules</span>
-                      <span className="badge">{path.estimatedWeeks}</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         <section className="modules-section">
           <div className="container">
-            <h2>
-              {selectedPath
-                ? `${window.LEARNING_PATH[selectedPath].title} Modules`
-                : "All Course Modules"}
-            </h2>
+            <h2>Course Modules</h2>
             <div className="modules-grid">
-              {(pathModules || filteredModules).map(module => (
+              {filteredModules.map(module => (
                 <ModuleCard
                   key={module.id}
                   module={module}
                   isSelected={selectedModule?.id === module.id}
-                  onClick={() => setSelectedModule(
-                    selectedModule?.id === module.id ? null : module
-                  )}
+                  onClick={() => showModuleVideos(module)}
                 />
               ))}
             </div>
@@ -275,9 +250,9 @@ function ModuleCard({ module, isSelected, onClick }) {
         <span className="duration">{module.duration}</span>
       </div>
       <button className="module-action">
-        {isSelected ? 'Hide Videos' : 'View Videos'}
+        View Videos
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <polyline points={isSelected ? "18 15 12 9 6 15" : "6 9 12 15 18 9"}></polyline>
+          <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
     </div>
@@ -291,7 +266,7 @@ function VideoList({ module, onClose }) {
     if (listRef.current) {
       listRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }, []);
+  }, [module.id]);
 
   return (
     <section className="video-list-section" ref={listRef}>
