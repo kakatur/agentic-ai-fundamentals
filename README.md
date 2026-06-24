@@ -30,14 +30,6 @@ Master the complete journey from Python basics to production-ready multi-agent s
 14. **Cloud Deployment & Infrastructure** - AWS, Docker, ECS Fargate, Bedrock
 15. **Hands-On Projects** - 8+ real-world projects at every skill level
 
-### Learning Paths
-
-Choose your path based on your background:
-
-- **Beginner Path** (12-16 weeks) - New to programming or AI
-- **Intermediate Path** (16-20 weeks) - Know Python basics
-- **Advanced Path** (12-16 weeks) - Experienced developers
-
 ## 🎯 Who This Is For
 
 - Developers learning AI and LLM development
@@ -155,7 +147,6 @@ All video content is hosted on YouTube for free access. The site provides:
 - **Responsive Design** - Works on desktop, tablet, and mobile
 - **Dark/Light Mode** - Toggle between themes
 - **Search Functionality** - Find modules and videos quickly
-- **Learning Paths** - Customized tracks for different skill levels
 - **Project Library** - Real-world applications to build
 - **Resource Links** - Documentation and tool references
 

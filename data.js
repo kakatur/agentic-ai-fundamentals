@@ -817,27 +817,6 @@ window.MODULES = [
   }
 ];
 
-window.LEARNING_PATH = {
-  beginner: {
-    title: "Beginner Path",
-    description: "New to programming or AI? Start here with Python fundamentals.",
-    modules: [1, 2, 3, 6, 7, 15],
-    estimatedWeeks: "12-16 weeks"
-  },
-  intermediate: {
-    title: "Intermediate Path",
-    description: "Know Python? Jump into AI/LLM fundamentals and build agents.",
-    modules: [2, 3, 4, 5, 6, 7, 8, 10, 11, 15],
-    estimatedWeeks: "16-20 weeks"
-  },
-  advanced: {
-    title: "Advanced Path",
-    description: "Experienced developer? Focus on multi-agent systems and production deployment.",
-    modules: [5, 8, 9, 10, 11, 12, 13, 14, 15],
-    estimatedWeeks: "12-16 weeks"
-  }
-};
-
 window.PROJECT_TEMPLATES = [
   {
     id: 1,
