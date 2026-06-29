@@ -481,8 +481,9 @@ window.MODULES = [
       {
         title: "Agent-as-Tool: The Lightweight Alternative",
         description: "Wrap sub-agents as tools for simpler orchestration without graph complexity.",
-        duration: "55 min",
-        url: "PLACEHOLDER"
+        duration: "5 min",
+        url: "https://www.youtube.com/watch?v=j-9TcJhGBuE",
+        thumbnailUrl: "https://i.ytimg.com/vi/j-9TcJhGBuE/maxresdefault.jpg"
       },
       {
         title: "State Management in Multi-Agent Systems",
