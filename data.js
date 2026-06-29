@@ -473,9 +473,10 @@ window.MODULES = [
       },
       {
         title: "Common Multi-Agent Patterns",
-        description: "Implement supervisor-worker, sequential pipeline, parallel fan-out, and reflection patterns.",
-        duration: "65 min",
-        url: "PLACEHOLDER"
+        description: "Learn router, parallel specialist, verifier, and escalation patterns before choosing a framework.",
+        duration: "7 min",
+        url: "https://youtu.be/djhHR-jqGRo",
+        thumbnailUrl: "https://i.ytimg.com/vi/djhHR-jqGRo/maxresdefault.jpg"
       },
       {
         title: "Agent-as-Tool: The Lightweight Alternative",
