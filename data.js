@@ -475,7 +475,7 @@ window.MODULES = [
         title: "Common Multi-Agent Patterns",
         description: "Learn router, parallel specialist, verifier, and escalation patterns before choosing a framework.",
         duration: "7 min",
-        url: "https://youtu.be/djhHR-jqGRo",
+        url: "https://www.youtube.com/watch?v=djhHR-jqGRo",
         thumbnailUrl: "https://i.ytimg.com/vi/djhHR-jqGRo/maxresdefault.jpg"
       },
       {
