@@ -488,26 +488,30 @@ window.MODULES = [
       {
         title: "State Management in Multi-Agent Systems",
         description: "Design typed state with Pydantic, manage shared state, and implement checkpointers.",
-        duration: "60 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=1DNcdTrvjH0",
+        thumbnailUrl: "https://i.ytimg.com/vi/1DNcdTrvjH0/maxresdefault.jpg"
       },
       {
         title: "Agent-to-Agent Protocol (A2A)",
         description: "Enable agent discovery, capability cards, and cross-framework delegation with A2A.",
-        duration: "55 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=xWXq6DkuG2k",
+        thumbnailUrl: "https://i.ytimg.com/vi/xWXq6DkuG2k/maxresdefault.jpg"
       },
       {
         title: "Framework Comparison: LangGraph vs CrewAI vs AutoGen",
         description: "Compare major multi-agent frameworks and choose the right one for your project.",
-        duration: "50 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=qnk7iLS6CcY",
+        thumbnailUrl: "https://i.ytimg.com/vi/qnk7iLS6CcY/maxresdefault.jpg"
       },
       {
         title: "Debugging Multi-Agent Systems",
         description: "Debug complex agent interactions, trace message flow, and fix infinite loops.",
-        duration: "70 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=fLeOESOSXIg",
+        thumbnailUrl: "https://i.ytimg.com/vi/fLeOESOSXIg/maxresdefault.jpg"
       }
     ]
   },
