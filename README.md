@@ -202,13 +202,3 @@ This project is open source. Feel free to use, modify, and share.
 
 - **YouTube:** [@AgenticAIFundamentals](https://youtube.com/@AgenticAIFundamentals)
 - **GitHub:** [github.com/kakatur/agentic-ai-fundamentals](https://github.com/kakatur/agentic-ai-fundamentals)
-
-## 🙏 Acknowledgments
-
-This curriculum builds on the collective knowledge of the AI engineering community and is inspired by real-world production systems.
-
----
-
-**Built with ❤️ for aspiring AI engineers**
-
-Start your journey: [agenticaifundamentals.com](https://agenticaifundamentals.com)

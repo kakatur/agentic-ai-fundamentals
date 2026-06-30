@@ -50,8 +50,9 @@ function App() {
         <Hero />
         <InstructorSection />
 
-        <section className="search-section">
+        <section className="modules-section">
           <div className="container">
+            <h2>Course Modules</h2>
             <div className="search-bar">
               <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -64,12 +65,6 @@ function App() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-          </div>
-        </section>
-
-        <section className="modules-section">
-          <div className="container">
-            <h2>Course Modules</h2>
             <div className="modules-grid">
               {filteredModules.map(module => (
                 <ModuleCard
@@ -146,8 +141,8 @@ function Hero() {
             Agentic AI Fundamentals
           </h2>
           <p className="hero-subtitle">
-            Learn to build production-ready AI agents from scratch.
-            15 comprehensive modules covering Python, LLMs, RAG, multi-agent systems, and deployment.
+            A comprehensive learning path from Python basics to production-ready AI agents.
+            All content available for free on YouTube.
           </p>
           <div className="hero-stats">
             <div className="stat">

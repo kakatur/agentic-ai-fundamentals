@@ -452,7 +452,7 @@ window.MODULES = [
     id: 9,
     title: "Multi-Agent Systems",
     color: "orange",
-    duration: "~8 hours",
+    duration: "~1 hours",
     videoCount: 8,
     playlistUrl: "https://www.youtube.com/playlist?list=PLdMCsmGiN-78",
     description: "Orchestrate multiple specialized agents to solve complex problems.",
