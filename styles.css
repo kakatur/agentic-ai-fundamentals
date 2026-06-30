@@ -104,6 +104,8 @@ h1, h2, h3, h4, h5, h6 {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .logo-text h1 {
@@ -210,6 +212,13 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.5px;
 }
 
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .cta-button {
   display: inline-flex;
   align-items: center;
@@ -230,6 +239,17 @@ h1, h2, h3, h4, h5, h6 {
 .cta-button:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+.cta-button-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.cta-button-secondary:hover {
+  background: var(--bg-tertiary);
 }
 
 .cta-button svg {
@@ -553,6 +573,26 @@ h1, h2, h3, h4, h5, h6 {
 .video-list-header p {
   font-size: 15px;
   color: var(--text-secondary);
+}
+
+.playlist-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--accent-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.playlist-link:hover {
+  color: var(--accent-secondary);
+}
+
+.playlist-link svg {
+  width: 18px;
+  height: 18px;
 }
 
 .close-button {

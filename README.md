@@ -79,7 +79,7 @@ agentic-ai-fundamentals/
 ├── data.js             # Course content data
 ├── styles.css          # Styling
 ├── CNAME               # Custom domain configuration
-├── 08_01_.../          # Learner-facing lesson material and code
+├── 09_01_.../          # Learner-facing lesson material and code
 └── README.md           # This file
 ```
 
