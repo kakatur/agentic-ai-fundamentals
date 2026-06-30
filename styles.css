@@ -183,6 +183,9 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   margin-bottom: 32px;
   line-height: 1.7;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-stats {
@@ -242,14 +245,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .cta-button-secondary {
-  background: var(--bg-primary);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
 .cta-button-secondary:hover {
-  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
 }
 
 .cta-button svg {
@@ -347,16 +350,10 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* === SEARCH === */
-.search-section {
-  padding: 40px 0;
-  background: var(--bg-secondary);
-}
-
 .search-bar {
   position: relative;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0 auto 40px;
 }
 
 .search-icon {
@@ -398,14 +395,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* === MODULES === */
 .modules-section {
-  padding: 60px 0;
+  padding: 48px 0 60px;
   background: var(--bg-secondary);
 }
 
 .modules-section h2 {
   text-align: center;
   font-size: 36px;
-  margin-bottom: 48px;
+  margin-bottom: 28px;
 }
 
 .modules-grid {
