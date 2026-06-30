@@ -101,20 +101,14 @@ function Header({ theme, toggleTheme }) {
       <div className="container">
         <div className="header-content">
           <div className="logo">
-            <svg viewBox="0 0 40 40" className="logo-icon">
-              <defs>
-                <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6366f1" />
-                  <stop offset="50%" stopColor="#8b5cf6" />
-                  <stop offset="100%" stopColor="#d946ef" />
-                </linearGradient>
-              </defs>
-              <rect width="40" height="40" rx="8" fill="url(#logo-gradient)" />
-              <text x="20" y="28" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">A</text>
-            </svg>
+            <img
+              src="assets/brand/youtube-channel-profile-1024x1024.png"
+              alt=""
+              className="logo-icon"
+            />
             <div className="logo-text">
               <h1>Agentic AI Fundamentals</h1>
-              <p>From Python to Production AI Systems</p>
+              <p>Concepts. Code Samples. Interview Questions.</p>
             </div>
           </div>
 
@@ -149,7 +143,7 @@ function Hero() {
       <div className="container">
         <div className="hero-content">
           <h2 className="hero-title">
-            Master Agentic AI Development
+            Agentic AI Fundamentals
           </h2>
           <p className="hero-subtitle">
             Learn to build production-ready AI agents from scratch.
@@ -175,17 +169,30 @@ function Hero() {
               <div className="stat-label">Content</div>
             </div>
           </div>
-          <a
-            href="https://youtube.com/@AgenticAIFundamentals"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cta-button"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-            </svg>
-            Subscribe on YouTube
-          </a>
+          <div className="hero-actions">
+            <a
+              href="https://youtube.com/@AgenticAIFundamentals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-button"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              Subscribe on YouTube
+            </a>
+            <a
+              href="https://github.com/kakatur/agentic-ai-fundamentals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-button cta-button-secondary"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -275,6 +282,19 @@ function VideoList({ module, onClose }) {
           <div>
             <h2>{module.title}</h2>
             <p>{module.videoCount} videos · {module.duration}</p>
+            {module.playlistUrl && (
+              <a
+                href={module.playlistUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="playlist-link"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm14.5-4.5L22 14l-3.5 2.5v-5z"/>
+                </svg>
+                Watch playlist
+              </a>
+            )}
           </div>
           <button className="close-button" onClick={onClose}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">

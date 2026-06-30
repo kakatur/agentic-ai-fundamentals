@@ -402,8 +402,7 @@ window.MODULES = [
         title: "Understanding Context Windows & Token Budgets",
         description: "Master context window limits, token budgeting, and the 'lost in the middle' problem.",
         duration: "19 min",
-        url: "https://youtu.be/JWbGjtVFeoM",
-        thumbnailUrl: "https://i.ytimg.com/vi/JWbGjtVFeoM/maxresdefault.jpg"
+        url: "PLACEHOLDER"
       },
       {
         title: "Context Structure: SYSTEM/CONTEXT/USER Separation",
@@ -455,59 +454,60 @@ window.MODULES = [
     color: "orange",
     duration: "~8 hours",
     videoCount: 8,
+    playlistUrl: "https://www.youtube.com/playlist?list=PLdMCsmGiN-78",
     description: "Orchestrate multiple specialized agents to solve complex problems.",
     videos: [
       {
-        title: "When to Use Multi-Agent Systems (And When Not To)",
-        description: "Decision framework: single-agent-with-tools vs multi-agent architecture for your use case.",
-        duration: "21 min",
-        url: "https://youtu.be/ocwT9OFrHF4",
-        thumbnailUrl: "https://i.ytimg.com/vi/ocwT9OFrHF4/maxresdefault.jpg"
+        title: "09.01 - When To Use Multi-Agent Systems",
+        description: "Learn when to choose deterministic software, one agent with tools, or a multi-agent system.",
+        duration: "8 min",
+        url: "https://www.youtube.com/watch?v=NB9yP6E9zKc",
+        thumbnailUrl: "https://i.ytimg.com/vi/NB9yP6E9zKc/maxresdefault.jpg"
       },
       {
-        title: "LangGraph Fundamentals: Nodes, Edges & State",
-        description: "Master LangGraph basics: StateGraph, nodes, edges, and state management for agent orchestration.",
-        duration: "18 min",
-        url: "https://youtu.be/vdsG9YqIMU0",
-        thumbnailUrl: "https://i.ytimg.com/vi/vdsG9YqIMU0/maxresdefault.jpg"
+        title: "09.02 - LangGraph Nodes, Edges, And State",
+        description: "Learn LangGraph's graph mental model with typed state, nodes, normal edges, conditional edges, and reducers.",
+        duration: "5 min",
+        url: "https://www.youtube.com/watch?v=JgBJGAQEqUQ",
+        thumbnailUrl: "https://i.ytimg.com/vi/JgBJGAQEqUQ/maxresdefault.jpg"
       },
       {
-        title: "Common Multi-Agent Patterns",
+        title: "09.03 - Common Multi-Agent Patterns",
         description: "Learn router, parallel specialist, verifier, and escalation patterns before choosing a framework.",
         duration: "7 min",
         url: "https://www.youtube.com/watch?v=djhHR-jqGRo",
         thumbnailUrl: "https://i.ytimg.com/vi/djhHR-jqGRo/maxresdefault.jpg"
       },
       {
-        title: "Agent-as-Tool: The Lightweight Alternative",
+        title: "09.04 - Agent-as-Tool: The Lightweight Alternative",
         description: "Wrap sub-agents as tools for simpler orchestration without graph complexity.",
         duration: "5 min",
         url: "https://www.youtube.com/watch?v=j-9TcJhGBuE",
         thumbnailUrl: "https://i.ytimg.com/vi/j-9TcJhGBuE/maxresdefault.jpg"
       },
       {
-        title: "State Management in Multi-Agent Systems",
+        title: "09.05 - State Management in Multi-Agent Systems",
         description: "Design typed state with Pydantic, manage shared state, and implement checkpointers.",
         duration: "4 min",
         url: "https://www.youtube.com/watch?v=1DNcdTrvjH0",
         thumbnailUrl: "https://i.ytimg.com/vi/1DNcdTrvjH0/maxresdefault.jpg"
       },
       {
-        title: "Agent-to-Agent Protocol (A2A)",
+        title: "09.06 - Agent-to-Agent Protocol (A2A)",
         description: "Enable agent discovery, capability cards, and cross-framework delegation with A2A.",
         duration: "4 min",
         url: "https://www.youtube.com/watch?v=xWXq6DkuG2k",
         thumbnailUrl: "https://i.ytimg.com/vi/xWXq6DkuG2k/maxresdefault.jpg"
       },
       {
-        title: "Framework Comparison: LangGraph vs CrewAI vs AutoGen",
+        title: "09.07 - Framework Comparison: LangGraph vs CrewAI vs AutoGen",
         description: "Compare major multi-agent frameworks and choose the right one for your project.",
         duration: "4 min",
         url: "https://www.youtube.com/watch?v=qnk7iLS6CcY",
         thumbnailUrl: "https://i.ytimg.com/vi/qnk7iLS6CcY/maxresdefault.jpg"
       },
       {
-        title: "Debugging Multi-Agent Systems",
+        title: "09.08 - Debugging Multi-Agent Systems",
         description: "Debug complex agent interactions, trace message flow, and fix infinite loops.",
         duration: "4 min",
         url: "https://www.youtube.com/watch?v=fLeOESOSXIg",
@@ -677,7 +677,7 @@ window.MODULES = [
         title: "Introduction to LLM-Ops",
         description: "Understand LLM-Ops principles, the deployment lifecycle, and production challenges.",
         duration: "16 min",
-        url: "https://youtu.be/9gmstSp5FoA"
+        url: "PLACEHOLDER"
       },
       {
         title: "Tracing with LangSmith & LangFuse",
