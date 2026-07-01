@@ -141,8 +141,8 @@ function Hero() {
             Agentic AI Fundamentals
           </h2>
           <p className="hero-subtitle">
-            A comprehensive learning path from Python basics to production-ready AI agents.
-            All content available for free on YouTube.
+            A complete learning path from Python fundamentals to building production-ready AI agents.
+            All content is available for free on YouTube, with accompanying source code and lesson notes on GitHub.
           </p>
           <div className="hero-stats">
             <div className="stat">
@@ -445,38 +445,6 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h3>Agentic AI Fundamentals</h3>
-            <p>
-              A comprehensive learning path from Python basics to production-ready
-              AI agents. All content available for free on YouTube.
-            </p>
-          </div>
-
-          <div className="footer-section">
-            <h4>Connect</h4>
-            <a
-              href="https://youtube.com/@AgenticAIFundamentals"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-link"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-              </svg>
-              @AgenticAIFundamentals
-            </a>
-          </div>
-
-          <div className="footer-section">
-            <h4>Resources</h4>
-            <a href="https://github.com/kakatur/agentic-ai-fundamentals" className="footer-link">
-              GitHub Repository
-            </a>
-          </div>
-        </div>
-
         <div className="footer-bottom">
           <p>&copy; 2026 Agentic AI Fundamentals. All rights reserved.</p>
           <p>Built with React · Hosted on GitHub Pages</p>
