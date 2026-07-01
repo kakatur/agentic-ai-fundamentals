@@ -6,7 +6,6 @@ window.MODULES = [
     id: 1,
     title: "Python Fundamentals for AI",
     color: "blue",
-    duration: "~8 hours",
     videoCount: 8,
     description: "Master Python essentials needed for AI development - from basics to async programming.",
     videos: [
@@ -64,7 +63,6 @@ window.MODULES = [
     id: 2,
     title: "AI & LLM Fundamentals",
     color: "purple",
-    duration: "~6 hours",
     videoCount: 7,
     description: "Understand how LLMs work, from tokenization to model selection and RAG basics.",
     videos: [
@@ -116,7 +114,6 @@ window.MODULES = [
     id: 3,
     title: "Prompt Engineering & LLM APIs",
     color: "teal",
-    duration: "~8 hours",
     videoCount: 8,
     description: "Master the art and science of prompting, from API basics to advanced techniques.",
     videos: [
@@ -174,7 +171,6 @@ window.MODULES = [
     id: 4,
     title: "Vector Databases & Embeddings",
     color: "emerald",
-    duration: "~6 hours",
     videoCount: 7,
     description: "Deep dive into embeddings, similarity search, and vector database operations.",
     videos: [
@@ -226,7 +222,6 @@ window.MODULES = [
     id: 5,
     title: "Building RAG Systems",
     color: "amber",
-    duration: "~8 hours",
     videoCount: 8,
     description: "Build production-ready Retrieval-Augmented Generation systems from scratch.",
     videos: [
@@ -284,7 +279,6 @@ window.MODULES = [
     id: 6,
     title: "Function Calling & Tools",
     color: "rose",
-    duration: "~7 hours",
     videoCount: 8,
     description: "Give LLMs the ability to use tools and interact with external systems.",
     videos: [
@@ -342,7 +336,6 @@ window.MODULES = [
     id: 7,
     title: "Single Agent Systems",
     color: "indigo",
-    duration: "~7 hours",
     videoCount: 7,
     description: "Build intelligent single-agent systems with reasoning, tools, and memory.",
     videos: [
@@ -394,7 +387,6 @@ window.MODULES = [
     id: 8,
     title: "Agent Memory & Context Engineering",
     color: "cyan",
-    duration: "~8 hours",
     videoCount: 8,
     description: "Advanced memory systems and context management for sophisticated agents.",
     videos: [
@@ -452,7 +444,6 @@ window.MODULES = [
     id: 9,
     title: "Multi-Agent Systems",
     color: "orange",
-    duration: "~1 hours",
     videoCount: 8,
     playlistUrl: "https://www.youtube.com/playlist?list=PLdMCsmGiN-78",
     description: "Orchestrate multiple specialized agents to solve complex problems.",
@@ -519,7 +510,6 @@ window.MODULES = [
     id: 10,
     title: "Security & Guardrails",
     color: "pink",
-    duration: "~7 hours",
     videoCount: 7,
     description: "Secure your agents against attacks and implement robust safety guardrails.",
     videos: [
@@ -571,7 +561,6 @@ window.MODULES = [
     id: 11,
     title: "Agent Testing & Evaluation",
     color: "violet",
-    duration: "~7 hours",
     videoCount: 7,
     description: "Test, evaluate, and ensure quality in your agentic systems.",
     videos: [
@@ -623,7 +612,6 @@ window.MODULES = [
     id: 12,
     title: "Streaming & Real-Time Agents",
     color: "lime",
-    duration: "~6 hours",
     videoCount: 6,
     description: "Build responsive real-time agents with streaming capabilities.",
     videos: [
@@ -669,7 +657,6 @@ window.MODULES = [
     id: 13,
     title: "LLM-Ops & Observability",
     color: "sky",
-    duration: "~6 hours",
     videoCount: 6,
     description: "Operationalize your agents with monitoring, tracing, and continuous improvement.",
     videos: [
@@ -715,7 +702,6 @@ window.MODULES = [
     id: 14,
     title: "Cloud Deployment & Infrastructure",
     color: "fuchsia",
-    duration: "~7 hours",
     videoCount: 7,
     description: "Deploy agents to production with AWS, containers, and managed AI services.",
     videos: [
@@ -767,7 +753,6 @@ window.MODULES = [
     id: 15,
     title: "Hands-On Projects",
     color: "green",
-    duration: "~12 hours",
     videoCount: 8,
     description: "Build real-world projects from scratch to cement your learning.",
     videos: [
@@ -822,6 +807,23 @@ window.MODULES = [
     ]
   }
 ];
+
+const parseVideoDurationMinutes = (duration) => {
+  const minutes = Number.parseInt(duration, 10);
+  return Number.isFinite(minutes) ? minutes : 0;
+};
+
+window.MODULES = window.MODULES.map((module) => {
+  const durationMinutes = module.videos.reduce((sum, video) => (
+    sum + parseVideoDurationMinutes(video.duration)
+  ), 0);
+
+  return {
+    ...module,
+    durationMinutes,
+    duration: `${(durationMinutes / 60).toFixed(1)} hours`
+  };
+});
 
 window.PROJECT_TEMPLATES = [
   {
