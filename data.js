@@ -8,24 +8,25 @@ window.MODULES = [
     color: "blue",
     videoCount: 8,
     description: "Master Python essentials needed for AI development - from basics to async programming.",
+    playlistUrl: "https://www.youtube.com/playlist?list=PLcEtUFoF7ycg",
     videos: [
       {
         title: "Python Basics for AI: Variables, Types & Control Flow",
         description: "Learn Python fundamentals including variables, data types, control structures, and functions with practical AI examples.",
         duration: "45 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=Ct4fFvOF8as"
       },
       {
         title: "Object-Oriented Python: Classes, Inheritance & Pydantic",
         description: "Master OOP concepts, dataclasses, and Pydantic models essential for agent development.",
         duration: "60 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=Hd9I2xuPf7Q"
       },
       {
         title: "Python Data Structures Deep Dive",
         description: "Comprehensive guide to lists, tuples, sets, dicts, and collections module for efficient data handling.",
         duration: "50 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=hzmzhOsLHA0"
       },
       {
         title: "Error Handling & File I/O in Python",
@@ -43,19 +44,19 @@ window.MODULES = [
         title: "Database Connectivity: SQL & ORMs",
         description: "Connect to databases with psycopg2 and SQLAlchemy, manage connections, and write efficient queries.",
         duration: "65 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=Jl0b8naz6qI"
       },
       {
         title: "Building APIs with FastAPI",
         description: "Create your first FastAPI endpoint with Pydantic models, dependency injection, and automatic docs.",
         duration: "70 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=KjviMDjWzB4"
       },
       {
         title: "Async Programming with asyncio",
         description: "Master async/await, event loops, parallel execution, and timeouts for concurrent AI operations.",
         duration: "75 min",
-        url: "PLACEHOLDER"
+        url: "https://www.youtube.com/watch?v=FMy2kwGvxL4"
       }
     ]
   },
