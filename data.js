@@ -13,50 +13,58 @@ window.MODULES = [
       {
         title: "Python Basics for AI: Variables, Types & Control Flow",
         description: "Learn Python fundamentals including variables, data types, control structures, and functions with practical AI examples.",
-        duration: "45 min",
-        url: "https://www.youtube.com/watch?v=Ct4fFvOF8as"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=Ct4fFvOF8as",
+        thumbnailUrl: "https://i.ytimg.com/vi/Ct4fFvOF8as/maxresdefault.jpg"
       },
       {
         title: "Object-Oriented Python: Classes, Inheritance & Pydantic",
         description: "Master OOP concepts, dataclasses, and Pydantic models essential for agent development.",
-        duration: "60 min",
-        url: "https://www.youtube.com/watch?v=Hd9I2xuPf7Q"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=Hd9I2xuPf7Q",
+        thumbnailUrl: "https://i.ytimg.com/vi/Hd9I2xuPf7Q/maxresdefault.jpg"
       },
       {
         title: "Python Data Structures Deep Dive",
         description: "Comprehensive guide to lists, tuples, sets, dicts, and collections module for efficient data handling.",
-        duration: "50 min",
-        url: "https://www.youtube.com/watch?v=hzmzhOsLHA0"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=hzmzhOsLHA0",
+        thumbnailUrl: "https://i.ytimg.com/vi/hzmzhOsLHA0/maxresdefault.jpg"
       },
       {
         title: "Error Handling & File I/O in Python",
         description: "Exception handling, context managers, and working with JSON, CSV, and binary files.",
-        duration: "40 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=UwsceTJhZZk",
+        thumbnailUrl: "https://i.ytimg.com/vi/UwsceTJhZZk/maxresdefault.jpg"
       },
       {
         title: "Working with HTTP APIs using Requests",
         description: "Learn to call APIs, handle authentication, rate limits, and implement retry logic with tenacity.",
-        duration: "55 min",
-        url: "PLACEHOLDER"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=DnSeXOKDHWo",
+        thumbnailUrl: "https://i.ytimg.com/vi/DnSeXOKDHWo/maxresdefault.jpg"
       },
       {
         title: "Database Connectivity: SQL & ORMs",
         description: "Connect to databases with psycopg2 and SQLAlchemy, manage connections, and write efficient queries.",
-        duration: "65 min",
-        url: "https://www.youtube.com/watch?v=Jl0b8naz6qI"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=Jl0b8naz6qI",
+        thumbnailUrl: "https://i.ytimg.com/vi/Jl0b8naz6qI/maxresdefault.jpg"
       },
       {
         title: "Building APIs with FastAPI",
         description: "Create your first FastAPI endpoint with Pydantic models, dependency injection, and automatic docs.",
-        duration: "70 min",
-        url: "https://www.youtube.com/watch?v=KjviMDjWzB4"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=KjviMDjWzB4",
+        thumbnailUrl: "https://i.ytimg.com/vi/KjviMDjWzB4/maxresdefault.jpg"
       },
       {
         title: "Async Programming with asyncio",
         description: "Master async/await, event loops, parallel execution, and timeouts for concurrent AI operations.",
-        duration: "75 min",
-        url: "https://www.youtube.com/watch?v=FMy2kwGvxL4"
+        duration: "4 min",
+        url: "https://www.youtube.com/watch?v=FMy2kwGvxL4",
+        thumbnailUrl: "https://i.ytimg.com/vi/FMy2kwGvxL4/maxresdefault.jpg"
       }
     ]
   },
