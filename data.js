@@ -394,56 +394,58 @@ window.MODULES = [
   },
   {
     id: 8,
-    title: "Agent Memory & Context Engineering",
+    title: "Context Engineering & Agent Memory",
     color: "cyan",
     videoCount: 8,
-    description: "Advanced memory systems and context management for sophisticated agents.",
+    description: "Design context windows, memory layers, compression, caching, and privacy controls for reliable agents.",
+    playlistUrl: "https://www.youtube.com/playlist?list=PLCGcx-QjmAI8",
     videos: [
       {
-        title: "Understanding Context Windows & Token Budgets",
-        description: "Master context window limits, token budgeting, and the 'lost in the middle' problem.",
-        duration: "19 min",
-        url: "PLACEHOLDER"
+        title: "08.01 - Context Windows and Token Budgets",
+        description: "Budget prompt space, protect critical context, and avoid losing important facts in long inputs.",
+        duration: "5 min",
+        url: "https://www.youtube.com/watch?v=oxoaACfCfG4",
+        thumbnailUrl: "https://i.ytimg.com/vi/oxoaACfCfG4/maxresdefault.jpg"
       },
       {
-        title: "Context Structure: SYSTEM/CONTEXT/USER Separation",
-        description: "Organize prompts with clear sections for instructions, data, and user input for security and clarity.",
+        title: "Prompt Boundaries: Instructions, Context, and User Input",
+        description: "Separate instructions, retrieved context, and user input so agents stay easier to debug and safer to operate.",
         duration: "55 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Short-Term Memory: Session History Management",
-        description: "Implement sliding windows, preserve message pairs, and decide what to keep in conversation history.",
+        title: "Short-Term Memory and Conversation Windows",
+        description: "Keep recent turns useful with sliding windows, pinned facts, and intact user-assistant pairs.",
         duration: "60 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Semantic Caching for Speed & Cost Savings",
-        description: "Build semantic cache with FAISS for instant responses and massive cost reduction.",
+        title: "Semantic Caching for Faster Agents",
+        description: "Reuse answers for similar requests with similarity scoring, thresholds, and cache safety rules.",
         duration: "65 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Episodic Memory: Learning from Past Interactions",
-        description: "Implement episodic memory so agents remember and learn from previous conversations.",
+        title: "Episodic Memory and Lessons Learned",
+        description: "Store past interactions as episodes, retrieve relevant experience, and promote lessons into reusable rules.",
         duration: "60 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Context Compression Techniques",
-        description: "Compress long contexts with LLM summarization while preserving critical information.",
+        title: "Context Compression and Summarization",
+        description: "Shrink long histories while preserving decisions, constraints, open tasks, and user preferences.",
         duration: "55 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Long-Term Memory Systems",
-        description: "Build persistent memory with vector stores, knowledge graphs, and user profile systems.",
+        title: "Long-Term Memory with Profiles and Retrieval",
+        description: "Build durable memory around profiles, facts, retrieval records, confidence, and provenance.",
         duration: "70 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Privacy & Memory Management (GDPR, Right-to-Forget)",
-        description: "Handle memory privacy, implement data deletion, and comply with regulations.",
+        title: "Memory Privacy and Right-to-Forget Workflows",
+        description: "Design memory records so users can inspect, export, suppress, and delete stored information.",
         duration: "60 min",
         url: "PLACEHOLDER"
       }
