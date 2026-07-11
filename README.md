@@ -21,7 +21,7 @@ Master the complete journey from Python basics to production-ready multi-agent s
 5. **Building RAG Systems** - Document ingestion, chunking, hybrid retrieval, evaluation
 6. **Function Calling & Tools** - Tool design, MCP, error handling, security
 7. **Single Agent Systems** - ReAct pattern, LangChain, memory, human-in-the-loop
-8. **Agent Memory & Context Engineering** - Short-term, episodic, long-term memory
+8. **Context Engineering & Agent Memory** - Context windows, prompt boundaries, memory layers, compression, caching, and privacy
 9. **Multi-Agent Systems** - LangGraph, orchestration patterns, agent-as-tool
 10. **Security & Guardrails** - Prompt injection defense, three-layer architecture, semantic routing
 11. **Agent Testing & Evaluation** - Unit tests, simulation environments, LLM-as-judge
@@ -106,7 +106,7 @@ All video content is hosted on YouTube for free access. The site provides:
 - Function calling and tool use
 - Model Context Protocol (MCP)
 - Single and multi-agent systems
-- Agent memory and context management
+- Context engineering and agent memory
 - Semantic routing and intent classification
 
 ### Security & Production
