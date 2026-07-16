@@ -408,10 +408,11 @@ window.MODULES = [
         thumbnailUrl: "https://i.ytimg.com/vi/oxoaACfCfG4/maxresdefault.jpg"
       },
       {
-        title: "Prompt Boundaries: Instructions, Context, and User Input",
+        title: "08.02 - Prompt Boundaries: Instructions, Context, and User Input",
         description: "Separate instructions, retrieved context, and user input so agents stay easier to debug and safer to operate.",
-        duration: "55 min",
-        url: "PLACEHOLDER"
+        duration: "9 min",
+        url: "https://www.youtube.com/watch?v=tNnmFRIMsPM",
+        thumbnailUrl: "https://i.ytimg.com/vi/tNnmFRIMsPM/maxresdefault.jpg"
       },
       {
         title: "Short-Term Memory and Conversation Windows",
