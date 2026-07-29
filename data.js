@@ -182,45 +182,46 @@ window.MODULES = [
     color: "emerald",
     videoCount: 7,
     description: "Deep dive into embeddings, similarity search, and vector database operations.",
+    playlistUrl: "https://www.youtube.com/playlist?list=PLZzXKtJI6iZQ",
     videos: [
       {
-        title: "Understanding Embeddings: From Text to High-Dimensional Vectors",
+        title: "How Semantic Search Understands What Keywords Can't",
         description: "Comprehensive explanation of how embeddings work and why they're crucial for semantic search.",
-        duration: "50 min",
-        url: "PLACEHOLDER"
+        duration: "6 min",
+        url: "https://www.youtube.com/watch?v=BxqgDvv8Fw4"
       },
       {
-        title: "Similarity Search: Cosine, Dot Product & Distance Metrics",
+        title: "The Similarity Metric Mistake That Scrambles Search Results",
         description: "Learn different similarity measures and when to use each for optimal search results.",
         duration: "45 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Vector Databases Explained: Architecture & Use Cases",
+        title: "What Actually Happens Inside a Vector Database?",
         description: "Understand vector database internals, indexes (HNSW, IVF), and when you need them.",
         duration: "55 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Getting Started with FAISS & Chroma",
+        title: "FAISS or Chroma? Build Local Vector Search the Right Way",
         description: "Hands-on tutorial: set up local vector search with FAISS and Chroma for development.",
         duration: "60 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Production Vector Databases: Pinecone & Weaviate",
+        title: "Pinecone or Weaviate? Choose With Evidence, Not Hype",
         description: "Deploy and manage production vector databases with Pinecone and Weaviate.",
         duration: "65 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Chunking Strategies for Better Retrieval",
+        title: "Bad Chunking Is Quietly Ruining Your RAG Results",
         description: "Master document chunking: fixed-width, semantic, overlap windows, and parent-child strategies.",
         duration: "50 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Hybrid Search: Combining Vector & Keyword Search",
+        title: "Why Vector Search Alone Misses the Exact Answer",
         description: "Implement hybrid retrieval combining dense vectors with BM25 keyword search for best results.",
         duration: "55 min",
         url: "PLACEHOLDER"
