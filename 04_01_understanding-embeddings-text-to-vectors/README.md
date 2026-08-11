@@ -68,6 +68,8 @@ The tests verify that:
 
 Never repair a dimension mismatch by padding or trimming a vector. That changes its coordinates without placing it in the expected vector space.
 
+For a practical companion on embedding contracts, retrieval evaluation, and model migrations, read [From Text to Vectors: Understanding How Embeddings Work](https://medium.com/@kakatur/from-text-to-vectors-understanding-how-embeddings-work-3b48a5fef71b).
+
 ## Interview questions
 
 ### Basic
