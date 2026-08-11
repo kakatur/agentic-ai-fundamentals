@@ -7,9 +7,17 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class EmbeddingConfig:
-    model_id: str = "token-hash-demo-v1"
+    model_id: str = "token-hash-demo"
+    model_version: str = "v1"
+    input_type: str = "text"
     dimension: int = 16
     normalize: bool = True
+
+
+def assert_compatible(left: EmbeddingConfig, right: EmbeddingConfig) -> None:
+    """Reject vectors that were produced with different configurations."""
+    if left != right:
+        raise ValueError("embedding configurations must match")
 
 
 class TokenHashEmbedder:
@@ -27,9 +35,7 @@ class TokenHashEmbedder:
             bucket = int.from_bytes(digest[:4], "big") % self.config.dimension
             sign = 1.0 if digest[4] % 2 == 0 else -1.0
             vector[bucket] += sign
-        if self.config.normalize:
-            return l2_normalize(vector)
-        return vector
+        return l2_normalize(vector) if self.config.normalize else vector
 
 
 def l2_normalize(vector: list[float]) -> list[float]:

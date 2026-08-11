@@ -185,10 +185,10 @@ window.MODULES = [
     playlistUrl: "https://www.youtube.com/playlist?list=PLZzXKtJI6iZQ",
     videos: [
       {
-        title: "How Semantic Search Understands What Keywords Can't",
-        description: "Comprehensive explanation of how embeddings work and why they're crucial for semantic search.",
+        title: "Understanding Embeddings: From Text to Vectors",
+        description: "Learn how embedding models turn text into vectors, why relationships carry meaning, and when vectors are comparable.",
         duration: "6 min",
-        url: "https://www.youtube.com/watch?v=BxqgDvv8Fw4"
+        url: "https://www.youtube.com/watch?v=qYyHzOTbMho"
       },
       {
         title: "The Similarity Metric Mistake That Scrambles Search Results",
