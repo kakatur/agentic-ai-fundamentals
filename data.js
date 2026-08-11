@@ -191,10 +191,10 @@ window.MODULES = [
         url: "https://www.youtube.com/watch?v=qYyHzOTbMho"
       },
       {
-        title: "The Similarity Metric Mistake That Scrambles Search Results",
-        description: "Learn different similarity measures and when to use each for optimal search results.",
-        duration: "45 min",
-        url: "PLACEHOLDER"
+        title: "Measuring Vector Similarity: Cosine, Dot Product, and Euclidean Distance",
+        description: "Compare cosine similarity, dot product, and Euclidean distance, then choose the right metric and ranking direction.",
+        duration: "8 min",
+        url: "https://www.youtube.com/watch?v=J0BdcNiV9D4"
       },
       {
         title: "What Actually Happens Inside a Vector Database?",
