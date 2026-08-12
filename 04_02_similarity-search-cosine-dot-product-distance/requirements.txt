@@ -1,1 +1,1 @@
-# Standard-library demo and tests. Optional vendor packages are documented in the README.
+# No third-party packages are required.
