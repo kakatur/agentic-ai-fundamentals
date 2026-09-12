@@ -197,32 +197,32 @@ window.MODULES = [
         url: "https://www.youtube.com/watch?v=J0BdcNiV9D4"
       },
       {
-        title: "What Actually Happens Inside a Vector Database?",
-        description: "Understand vector database internals, indexes (HNSW, IVF), and when you need them.",
+        title: "Inside a Vector Database: Records, Indexes, and Search",
+        description: "Trace records through validation, filtering, ranking, updates, deletion, and exact or approximate indexing.",
         duration: "55 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "FAISS or Chroma? Build Local Vector Search the Right Way",
-        description: "Hands-on tutorial: set up local vector search with FAISS and Chroma for development.",
+        title: "FAISS and Chroma: Two Ways to Build Local Vector Search",
+        description: "Build one application-owned record contract around a FAISS index and a Chroma collection.",
         duration: "60 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Pinecone or Weaviate? Choose With Evidence, Not Hype",
-        description: "Deploy and manage production vector databases with Pinecone and Weaviate.",
+        title: "Evaluating Pinecone and Weaviate for Your Workload",
+        description: "Compare retrieval quality, filtered latency, freshness, lifecycle behavior, cost, and team ownership.",
         duration: "65 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Bad Chunking Is Quietly Ruining Your RAG Results",
-        description: "Master document chunking: fixed-width, semantic, overlap windows, and parent-child strategies.",
+        title: "Chunking Strategies for Better Retrieval",
+        description: "Compare fixed, overlapping, structure-aware, and parent-child chunks with boundary-focused tests.",
         duration: "50 min",
         url: "PLACEHOLDER"
       },
       {
-        title: "Why Vector Search Alone Misses the Exact Answer",
-        description: "Implement hybrid retrieval combining dense vectors with BM25 keyword search for best results.",
+        title: "Hybrid Search: Combining Semantic and Keyword Retrieval",
+        description: "Fuse dense and lexical rankings safely, then evaluate semantic, identifier, and mixed queries.",
         duration: "55 min",
         url: "PLACEHOLDER"
       }
