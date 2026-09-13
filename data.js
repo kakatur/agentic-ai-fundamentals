@@ -185,9 +185,9 @@ window.MODULES = [
     playlistUrl: "https://www.youtube.com/playlist?list=PLZzXKtJI6iZQ",
     videos: [
       {
-        title: "Understanding Embeddings: From Text to Vectors",
-        description: "Learn how embedding models turn text into vectors, why relationships carry meaning, and when vectors are comparable.",
-        duration: "6 min",
+        title: "How Text Embeddings Match Meaning Beyond Keywords",
+        description: "Build a semantic-search baseline, inspect a real no-overlap match, and block comparisons across incompatible embedding spaces.",
+        duration: "8 min",
         url: "https://www.youtube.com/watch?v=qYyHzOTbMho"
       },
       {
