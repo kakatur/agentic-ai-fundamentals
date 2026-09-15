@@ -470,7 +470,7 @@ window.MODULES = [
       },
       {
         title: "09.02 - LangGraph Nodes, Edges, And State",
-        description: "Learn LangGraph's graph mental model with typed state, nodes, normal edges, conditional edges, and reducers.",
+        description: "Learn LangGraph's graph framework with typed state, nodes, normal edges, conditional edges, and reducers.",
         duration: "5 min",
         url: "https://www.youtube.com/watch?v=JgBJGAQEqUQ",
         thumbnailUrl: "https://i.ytimg.com/vi/JgBJGAQEqUQ/maxresdefault.jpg"
