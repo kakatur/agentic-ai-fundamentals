@@ -1,1 +1,1 @@
-# No third-party packages are required.
+sentence-transformers==6.0.1

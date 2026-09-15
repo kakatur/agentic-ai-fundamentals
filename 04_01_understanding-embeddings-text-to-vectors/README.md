@@ -1,98 +1,128 @@
-# 04.01 - Understanding Embeddings: From Text to Vectors
+# 4.1 - How Text Embeddings Match Meaning Beyond Keywords
 
 ## Learning outcome
 
-Explain how an embedding model represents text as vectors, why meaning comes from relationships between vectors, and which configuration choices must match before vectors can be compared.
+Build a small semantic-search baseline that downloads a specific Sentence Transformers model version, converts a query and documents into embeddings, and ranks the documents by similarity.
 
-## Different words, related meaning
+## The answer can be relevant without sharing a keyword
 
-A user searches for "update my credentials," while the help center article is titled "reset your password." A keyword search may miss the article because the wording is different even though the intent is related.
+A user searches a help center for `I can't log in`. An article says `Reset your password to regain account access.` The two texts share no exact tokens, so a minimal keyword-overlap check returns an empty set.
 
-An embedding model gives a retrieval system another representation to compare. It converts each piece of text into a fixed-length list of numbers called a **vector**.
+A sentence embedding model offers another signal. It maps each text to a fixed-length vector, allowing the application to compare the full numerical representations even when the wording changes.
 
-## From text to vector space
+The specific model version used in this lesson produces the following result:
 
-You can picture a vector as a location in a mathematical space. A trained embedding model can place related text near other related text, even when the words do not match exactly.
+```text
+query: "I can't log in"
 
-The individual coordinates are not human-readable labels. One coordinate does not simply mean "password" or "account." The useful information comes from the relationship between complete vectors: their directions, distances, and relative positions.
+keyword overlap:
+  []           Reset your password to regain account access.
 
-An embedding does not understand text by itself. The model learned the vector space during training, and the retrieval system uses the resulting relationships.
+embedding ranking:
+  +0.582       Reset your password to regain account access.
+  +0.054       Download last quarter's revenue report.
+  -0.097       Track a package that is out for delivery.
+```
 
-## One model defines one space
+These scores belong to this model revision and these exact inputs. They demonstrate the lesson example, not a universal quality benchmark or relevance threshold.
 
-Each embedding model defines its own coordinate system. Two models can both return vectors with 384 values while assigning different meaning to those coordinates. Equal dimensions therefore make vectors the same shape, but not necessarily comparable.
+## Meet the model used in the demo
 
-Documents and queries must be embedded into the same space. That normally means using the same model and version, input preparation, task or input type, dimensions, and normalization policy.
+The demo uses [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). It is a compact sentence-transformer model designed to encode sentences and short paragraphs for tasks such as semantic search, clustering, and sentence similarity.
 
-## Embedding configuration
+The model maps each input to a vector containing 384 values. That number is the vector's **dimension**. You can picture the complete vector as one location in the model's learned embedding space. A given number in the vector usually does not have a stable human-readable meaning; the useful signal comes from relationships between complete vectors.
 
-Keep these choices explicit:
+The model card reports that the model was fine-tuned with a contrastive objective on more than one billion sentence pairs. During that training, related examples were pulled closer together and unrelated examples were pushed farther apart. That training helps the model place differently worded but related texts near one another.
 
-1. **Model and version** determine which learned vector space is used.
-2. **Input preparation** includes prefixes, task types, truncation, and other model-specific processing.
-3. **Dimension** determines the number of coordinates in each vector.
-4. **Normalization** optionally rescales vectors before comparison.
+The first time you run the demo, Sentence Transformers downloads this specific model version from Hugging Face. After that, it uses the local cache. Inputs longer than 256 word pieces are truncated by this model, so use it for sentences and short paragraphs or chunk longer documents before encoding them.
 
-The first three choices determine what is produced and whether vectors share a coordinate system. Normalization changes how the vectors are prepared for a similarity metric, which lesson 4.2 explores in detail.
+## Framework: text becomes a ranking signal
 
-## Using a trained embedding model
+```text
+text -> model preparation -> 384-value embedding -> similarity score -> ranking
+```
 
-You can use a trained embedding model in two common ways:
-
-- Call a hosted API. The provider runs the model and returns the vector.
-- Download a model from Hugging Face and run it on your own machine or server.
-
-In either case, read the model's instructions for input prefixes, task types, dimensions, and normalization. Use the same model and configuration for indexed documents and incoming queries.
+The code encodes the query and the candidate documents, compares the query vector with each document vector, and sorts the resulting cosine scores. An embedding does not make the final decision by itself. Your application still chooses the documents, ranking policy, and relevance threshold. Lesson 4.2 explains the similarity math in detail.
 
 ## Code walkthrough
 
-The lesson uses a deterministic token-hashing embedder so the mechanics remain visible:
+The implementation keeps model-specific code at one boundary:
 
-- `EmbeddingConfig` records the model ID and version, input type, dimension, and normalization policy.
-- `TokenHashEmbedder.embed` converts text into a repeatable fixed-length vector.
-- `assert_compatible` rejects vectors created with different configurations.
-- `dot` checks dimensions before comparing vectors.
+1. `load_model` supplies the model ID and exact revision to `SentenceTransformer`.
+2. `embed_texts` validates the text and selects `encode_query` or `encode_document` for its role.
+3. The model returns normalized vectors, and the function verifies the expected 384-value dimension.
+4. `rank_documents` checks the query and document roles, calculates cosine similarity, and sorts the results.
+5. `exact_token_overlap` supplies a deliberately small keyword baseline for contrast.
 
-Token hashing is not a semantic model. It can demonstrate the pipeline, configuration, and vector shape, but it has not learned that "credentials" and "password" may be related. Use a trained embedding model when evaluating semantic retrieval quality.
+The revision pin makes the lesson output reproducible. The demo simply downloads and runs that exact model.
 
-## Demo and tests
+## What the demo proves
 
-The demo embeds a query and documents with one shared configuration. It prints the configuration, vector length, and repeatable comparison scores.
+[`demo.py`](demo.py) makes the complete path visible:
 
-The tests verify that:
+- Sentence Transformers loads the real model from Hugging Face or its local cache;
+- the model produces a 384-dimensional vector for the query and each document;
+- the keyword baseline finds no shared tokens for the controlled examples;
+- the embedding ranking places the password-reset article first.
 
-- the same text and configuration produce repeatable vectors;
-- every vector has the configured dimension;
-- normalized nonzero vectors have unit length;
-- incompatible configurations and dimensions fail explicitly.
+The demo does not expose every internal transformer operation, and it does not prove that this model is best for every corpus. Evaluate candidate models with representative queries, documents, and relevance judgments from your own application.
 
-Never repair a dimension mismatch by padding or trimming a vector. That changes its coordinates without placing it in the expected vector space.
+## Tests and failure conditions
 
-For a practical companion on embedding contracts, retrieval evaluation, and model migrations, read [From Text to Vectors: Understanding How Embeddings Work](https://medium.com/@kakatur/from-text-to-vectors-understanding-how-embeddings-work-3b48a5fef71b).
+[`test_lesson.py`](test_lesson.py) uses a tiny offline fixture so the unit tests remain fast and deterministic. It verifies:
+
+- query and document encoding;
+- the zero-overlap keyword baseline;
+- the expected semantic ranking;
+- rejection of an unexpected output dimension;
+- ordinary cosine-similarity input checks;
+- rejection of blank text and unsupported roles.
+
+Common mistakes:
+
+- **Using the demo score as a production threshold:** tune ranking behavior with labeled examples from your application.
+- **Sending long documents as one input:** this model truncates beyond 256 word pieces; chunk longer material first.
+- **Ignoring the model's retrieval methods:** use `encode_query` and `encode_document` when the library and model expose those roles.
+- **Assuming embeddings make the product decision:** retrieval scores are inputs to application policy, evaluation, and often downstream processing.
+
+## Decision checklist
+
+Before adapting the demo, record:
+
+- the exact model ID and revision;
+- the output dimension and input-length limit;
+- how queries and documents are prepared;
+- the similarity metric;
+- representative evaluation queries and relevance judgments.
 
 ## Interview questions
 
 ### Basic
 
-What is an embedding?
+**What is a text embedding?**
 
-An embedding is a numerical representation of an input. For text embeddings, the relationships between complete vectors can capture useful relationships between pieces of text.
+A fixed-length numerical representation produced by a model. For this model, each sentence or short paragraph becomes a 384-dimensional vector, and relationships between complete vectors provide a useful signal for semantic ranking.
 
 ### Intermediate
 
-Why can two vectors with the same dimension still be incompatible?
+**What happens the first time this Python demo loads the model?**
 
-Dimension describes the number of coordinates, not what those coordinates mean. Vectors from different models may belong to different learned spaces.
+Sentence Transformers downloads the files for the specified model revision from Hugging Face and stores them in its local cache. Later runs can load those cached files.
 
 ### Advanced
 
-What makes two embeddings safe to compare?
+**What should you check before using `all-MiniLM-L6-v2` on long documents?**
 
-They should come from the same model and version with compatible input preparation, task type, dimensions, and normalization. If the embedding space changes, create and evaluate a separate index rather than mixing the vectors.
+The model truncates input longer than 256 word pieces. Split long documents into meaningful chunks and evaluate retrieval quality on examples from the target application.
 
 ## Commands
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
 python3 demo.py
 python3 -m unittest -v
 ```
+
+The unit tests use an offline fixture. `demo.py` uses the specified public model revision and needs network access on its first run.
