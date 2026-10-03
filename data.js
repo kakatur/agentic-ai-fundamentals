@@ -182,13 +182,13 @@ window.MODULES = [
     color: "emerald",
     videoCount: 7,
     description: "Deep dive into embeddings, similarity search, and vector database operations.",
-    playlistUrl: "https://www.youtube.com/playlist?list=PLZzXKtJI6iZQ",
+    playlistUrl: "https://www.youtube.com/playlist?list=PLQJr7cHHNUCk",
     videos: [
       {
         title: "How Text Embeddings Match Meaning Beyond Keywords",
         description: "Build a semantic-search baseline, inspect a real no-overlap match, and block comparisons across incompatible embedding spaces.",
         duration: "8 min",
-        url: "https://www.youtube.com/watch?v=qYyHzOTbMho"
+        url: "https://www.youtube.com/watch?v=64OX60Ezzp0"
       },
       {
         title: "Measuring Vector Similarity: Cosine, Dot Product, and Euclidean Distance",
