@@ -185,8 +185,8 @@ window.MODULES = [
     playlistUrl: "https://www.youtube.com/playlist?list=PLQJr7cHHNUCk",
     videos: [
       {
-        title: "How Text Embeddings Match Meaning Beyond Keywords",
-        description: "Build a semantic-search baseline, inspect a real no-overlap match, and block comparisons across incompatible embedding spaces.",
+        title: "Create Your First Text Embedding in Minutes",
+        description: "Create a 384-dimensional text embedding and use it to rank a relevant help article with zero shared keywords.",
         duration: "8 min",
         url: "https://www.youtube.com/watch?v=64OX60Ezzp0"
       },
