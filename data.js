@@ -197,10 +197,10 @@ window.MODULES = [
         url: "https://www.youtube.com/watch?v=J0BdcNiV9D4"
       },
       {
-        title: "Inside a Vector Database: Records, Indexes, and Search",
-        description: "Trace records through validation, filtering, ranking, updates, deletion, and exact or approximate indexing.",
-        duration: "55 min",
-        url: "PLACEHOLDER"
+        title: "Vector Search Masterclass: Filtering, Lifecycle, and Recall",
+        description: "Compare filtered FAISS HNSW results with exact search using Recall@K, then trace the record identity and lifecycle behind each result.",
+        duration: "9 min",
+        url: "https://www.youtube.com/watch?v=IJiCAb-m33M"
       },
       {
         title: "FAISS and Chroma: Two Ways to Build Local Vector Search",
