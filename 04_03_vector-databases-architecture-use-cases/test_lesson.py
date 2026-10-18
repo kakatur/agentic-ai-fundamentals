@@ -1,34 +1,54 @@
 import unittest
 
-from vector_store import ExactVectorStore, Record
+from vector_store import ExactVectorStore, VectorRecord
 
 
-class StoreTests(unittest.TestCase):
+def record(record_id, product="iPhone App", text="source", embedding=(1.0, 0.0), version="demo-v1"):
+    return VectorRecord(record_id, product, text, embedding, version)
+
+
+class ExactVectorStoreTests(unittest.TestCase):
     def setUp(self):
-        self.store = ExactVectorStore(2, "v1")
+        self.store = ExactVectorStore(dimension=2, expected_embedding_version="demo-v1")
 
-    def test_upsert_replaces_by_stable_id(self):
-        self.store.upsert(Record("a", "old", (1, 0), "t", "v1"))
-        self.store.upsert(Record("a", "new", (0, 1), "t", "v1"))
-        self.assertEqual(self.store.query((0, 1), tenant_id="t")[0].text, "new")
+    def test_search_filters_by_product_before_ranking(self):
+        self.store.upsert(record("public", "iPhone App", embedding=(0.8, 0.6)))
+        self.store.upsert(record("private", "Android App", embedding=(1.0, 0.0)))
+        hits = self.store.search((1.0, 0.0), product="iPhone App")
+        self.assertEqual([item.record_id for item, _score in hits], ["public"])
 
-    def test_tenant_and_metadata_define_eligibility(self):
-        self.store.upsert(Record("x", "allowed", (1, 0), "mine", "v1", {"kind": "guide"}))
-        self.store.upsert(Record("y", "wrong kind", (1, 0), "mine", "v1", {"kind": "invoice"}))
-        self.store.upsert(Record("z", "wrong tenant", (1, 0), "other", "v1", {"kind": "guide"}))
-        hits = self.store.query((1, 0), tenant_id="mine", metadata_filter={"kind": "guide"})
-        self.assertEqual([hit.record_id for hit in hits], ["x"])
+    def test_upsert_replaces_the_record_with_the_same_id(self):
+        self.store.upsert(record("iphone-reset-17", text="revision 12"))
+        self.store.upsert(record("iphone-reset-17", text="revision 13", embedding=(0.9, 0.1)))
+        hits = self.store.search((1.0, 0.0), product="iPhone App")
+        self.assertEqual(len(hits), 1)
+        self.assertEqual(hits[0][0].text, "revision 13")
 
-    def test_delete_removes_searchable_record(self):
-        self.store.upsert(Record("a", "text", (1, 0), "t", "v1"))
-        self.assertTrue(self.store.delete("a"))
-        self.assertEqual(self.store.query((1, 0), tenant_id="t"), [])
+    def test_delete_removes_the_record_from_search(self):
+        self.store.upsert(record("iphone-reset-17"))
+        self.assertTrue(self.store.delete("iphone-reset-17"))
+        self.assertFalse(self.store.delete("iphone-reset-17"))
+        self.assertEqual(self.store.search((1.0, 0.0), product="iPhone App"), [])
 
-    def test_invalid_vector_contract_fails(self):
-        with self.assertRaises(ValueError):
-            self.store.upsert(Record("x", "text", (1,), "t", "v1"))
-        with self.assertRaises(ValueError):
-            self.store.upsert(Record("x", "text", (1, 0), "t", "v2"))
+    def test_dimension_and_zero_query_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "dimension"):
+            self.store.upsert(record("bad", embedding=(1.0,)))
+        with self.assertRaisesRegex(ValueError, "zero"):
+            self.store.search((0.0, 0.0), product="iPhone App")
+
+    def test_upsert_rejects_a_different_embedding_version(self):
+        with self.assertRaisesRegex(ValueError, "does not match"):
+            self.store.upsert(record("wrong-version", version="demo-v2"))
+
+    def test_zero_and_non_finite_record_embeddings_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "nonzero"):
+            self.store.upsert(record("zero", embedding=(0.0, 0.0)))
+        with self.assertRaisesRegex(ValueError, "finite"):
+            self.store.upsert(record("nan", embedding=(float("nan"), 1.0)))
+
+    def test_non_finite_query_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "must be finite"):
+            self.store.search((float("inf"), 1.0), product="iPhone App")
 
 
 if __name__ == "__main__":

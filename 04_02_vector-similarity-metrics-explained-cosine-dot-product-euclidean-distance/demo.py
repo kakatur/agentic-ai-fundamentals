@@ -4,8 +4,8 @@ from metrics import rank
 query = [1.0, 0.0]
 candidates = {
     "same direction, longer": [4.0, 0.0],
-    "nearby endpoint": [0.8, 0.2],
-    "opposite direction": [-1.0, 0.0],
+    "diagonal": [5.0, 2.0],
+    "nearby endpoint": [0.8, 0.6],
 }
 
 for metric_name in ("cosine", "dot", "euclidean"):

@@ -21,7 +21,9 @@ def cosine_similarity(left: Vector, right: Vector) -> float:
     product = dot_product(left, right)
     left_norm = math.sqrt(dot_product(left, left))
     right_norm = math.sqrt(dot_product(right, right))
-    return 0.0 if left_norm == 0 or right_norm == 0 else product / (left_norm * right_norm)
+    if left_norm == 0 or right_norm == 0:
+        raise ValueError("cosine similarity is undefined for zero vectors")
+    return product / (left_norm * right_norm)
 
 
 def euclidean_distance(left: Vector, right: Vector) -> float:
@@ -33,7 +35,9 @@ def l2_normalize(vector: Vector) -> list[float]:
     if not vector:
         raise ValueError("vector must have a nonzero dimension")
     norm = math.sqrt(sum(value * value for value in vector))
-    return [0.0] * len(vector) if norm == 0 else [value / norm for value in vector]
+    if norm == 0:
+        raise ValueError("cannot normalize a zero vector")
+    return [value / norm for value in vector]
 
 
 def rank(
