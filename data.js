@@ -180,8 +180,8 @@ window.MODULES = [
     id: 4,
     title: "Vector Databases & Embeddings",
     color: "emerald",
-    videoCount: 7,
-    description: "Deep dive into embeddings, similarity search, and vector database operations.",
+    videoCount: 6,
+    description: "Work with embeddings, vector search, backend choices, chunking, and hybrid retrieval.",
     playlistUrl: "https://www.youtube.com/playlist?list=PLQJr7cHHNUCk",
     videos: [
       {
@@ -204,26 +204,20 @@ window.MODULES = [
       },
       {
         title: "Choosing the Right Vector Database: DuckDB, FAISS, Chroma, pgvector, Pinecone & Weaviate",
-        description: "Compare DuckDB, FAISS, pgvector, and vector databases by ownership and workload using a local help-center example.",
+        description: "Compare DuckDB, FAISS, Chroma, pgvector, Pinecone, and Weaviate by deployment, ownership, and example use cases.",
         duration: "10 min",
         url: "https://www.youtube.com/watch?v=9JLEkq_2VpI"
       },
       {
-        title: "Evaluating Pinecone and Weaviate for Your Workload",
-        description: "Compare retrieval quality, filtered latency, freshness, lifecycle behavior, cost, and team ownership.",
-        duration: "65 min",
-        url: "PLACEHOLDER"
-      },
-      {
         title: "Chunking Strategies for Better Retrieval",
-        description: "Compare fixed, overlapping, structure-aware, and parent-child chunks with boundary-focused tests.",
-        duration: "50 min",
+        description: "Preserve answer context with chunk boundaries, traceable records, and boundary-focused evaluation.",
+        duration: "6 min",
         url: "PLACEHOLDER"
       },
       {
         title: "Hybrid Search: Combining Semantic and Keyword Retrieval",
         description: "Fuse dense and lexical rankings safely, then evaluate semantic, identifier, and mixed queries.",
-        duration: "55 min",
+        duration: "6 min",
         url: "PLACEHOLDER"
       }
     ]
