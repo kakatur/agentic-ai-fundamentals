@@ -1,0 +1,5 @@
+{"id": "account-73", "name": "Reset your password", "product": "account", "embedding": [0.0, 0.0, 1.0]}
+{"id": "billing-42", "name": "Charged twice for the same purchase", "product": "billing", "embedding": [1.0, 0.0, 0.0]}
+{"id": "billing-68", "name": "Change your payment method", "product": "billing", "embedding": [0.8, 0.6, 0.0]}
+{"id": "billing-25", "name": "Check a refund", "product": "billing", "embedding": [0.9, 0.4358899, 0.0]}
+{"id": "shipping-91", "name": "Find a delayed parcel", "product": "shipping", "embedding": [0.0, 1.0, 0.0]}
