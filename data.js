@@ -203,10 +203,10 @@ window.MODULES = [
         url: "https://www.youtube.com/watch?v=IJiCAb-m33M"
       },
       {
-        title: "FAISS and Chroma: Two Ways to Build Local Vector Search",
-        description: "Build one application-owned record contract around a FAISS index and a Chroma collection.",
-        duration: "60 min",
-        url: "PLACEHOLDER"
+        title: "Choosing the Right Vector Database: DuckDB, FAISS, Chroma, pgvector, Pinecone & Weaviate",
+        description: "Compare DuckDB, FAISS, pgvector, and vector databases by ownership and workload using a local help-center example.",
+        duration: "10 min",
+        url: "https://www.youtube.com/watch?v=9JLEkq_2VpI"
       },
       {
         title: "Evaluating Pinecone and Weaviate for Your Workload",
