@@ -1,3 +1,3 @@
-# Python 3.10 or newer. The model downloads on the first run.
+# Python 3.11 or newer. The model downloads on the first run.
 duckdb==2.0.0
 sentence-transformers==6.2.0

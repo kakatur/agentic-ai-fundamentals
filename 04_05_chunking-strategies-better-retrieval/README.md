@@ -51,7 +51,7 @@ A quick quality check is to read a candidate chunk by itself: can the agent tell
 
 ## Run the comparison
 
-Requires Python 3.10 or newer. Install the dependencies first; the embedding
+Requires Python 3.11 or newer. Install the dependencies first; the embedding
 model downloads on the first run.
 
 Run the demo from this directory:
