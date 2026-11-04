@@ -51,15 +51,30 @@ A quick quality check is to read a candidate chunk by itself: can the agent tell
 
 ## Run the comparison
 
-Requires Python 3.10 or newer; the demo uses only the standard library.
+Requires Python 3.10 or newer. Install the dependencies first; the embedding
+model downloads on the first run.
 
 Run the demo from this directory:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 demo.py
 ```
 
-The program applies three strategies to the same internal procedure and agent question, prints up to two top-ranked chunks for each, and reports how many distinct question words appear in each chunk. Read each result beside its score and metadata to see which parts of the question and procedure the chunk contains. It then compares eight-word windows over the procedure body with no overlap and with a three-word overlap. For this procedure, the body forms three chunks without overlap and five with overlap. For fixed windows, the printed chunk IDs encode the start and exclusive end word offsets; the results also show document ID, document title, and chunk index metadata.
+The program applies three strategies to the same internal procedure, embeds each
+search chunk with a local Sentence Transformers model, and stores its vector,
+text, ID, and metadata in an in-memory DuckDB table. It embeds the agent question
+with the same model, ranks each strategy's chunks by cosine similarity, and
+prints up to two results per strategy. This is an exact vector search over the
+small demo table; it does not need an approximate-nearest-neighbor index. The
+DuckDB table is rebuilt on each run. Read each result beside its score and
+metadata to see which parts of the procedure the chunk contains.
+
+The demo then compares eight-word windows over the procedure body with no
+overlap and with three-word overlap. For this procedure, the body forms three
+chunks without overlap and five with overlap; this part shows the chunks and
+counts, without embedding the overlapping variant. For fixed windows, the
+printed chunk IDs encode the start and exclusive end word offsets.
 
 With this example query, the top sentence chunk contains the refund action and timing but omits the transaction validation. The paragraph result contains the validation, action, and timing together, while the heading is returned as metadata. That is the specific context trade-off to look for in your own documents.
 
@@ -134,4 +149,6 @@ I test them on realistic user questions and choose the approach that returns rel
 
 - Sentence Transformers semantic search and model input guidance — https://sbert.net/examples/sentence_transformer/applications/semantic-search/README.html
 - all-MiniLM-L6-v2 model card and input behavior — https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+- DuckDB array cosine similarity — https://duckdb.org/docs/current/sql/functions/array
+- DuckDB in-memory Python connection — https://duckdb.org/docs/stable/clients/python/overview
 - Pinecone, “Chunking Strategies for LLM Applications” — https://www.pinecone.io/learn/chunking-strategies/

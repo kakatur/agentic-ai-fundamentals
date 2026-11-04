@@ -3,10 +3,23 @@ from contextlib import redirect_stdout
 from io import StringIO
 from unittest.mock import patch
 
+import duckdb
+import numpy as np
+
 import demo
 
-from chunking import chunk_text
-from demo import BODY, HEADING, paragraph_chunk
+from chunking import TextChunk, chunk_text
+from demo import BODY, HEADING, build_chunk_table, paragraph_chunk, search_chunks
+
+
+class FakeModel:
+    def encode_document(self, texts):
+        return np.array([[1.0, 0.0] if "settled" in text else [0.0, 1.0]
+                         for text in texts], dtype=np.float32)
+
+    def encode_query(self, text):
+        return np.array([1.0, 0.0] if "settled" in text else [0.0, 1.0],
+                        dtype=np.float32)
 
 
 class ChunkingTests(unittest.TestCase):
@@ -54,12 +67,26 @@ class ChunkingTests(unittest.TestCase):
         self.assertEqual(chunks[1].text, "have settled. Then refund the duplicate charge and")
         self.assertEqual((chunks[-1].start_word, chunks[-1].end_word), (20, 24))
 
+    def test_duckdb_ranks_stored_embeddings_and_returns_metadata(self):
+        chunks = [
+            TextChunk("validation", 0, 2, "transactions settled", {"chunk_index": 1}),
+            TextChunk("timing", 2, 4, "refund timing", {"chunk_index": 2}),
+        ]
+        with duckdb.connect(":memory:") as connection:
+            build_chunk_table(connection, [("sentence", chunks)], FakeModel(), 2)
+            hits = search_chunks(connection, "sentence", [1.0, 0.0])
+        self.assertEqual([hit[0] for hit in hits], ["validation", "timing"])
+        self.assertEqual(hits[0][2], {"chunk_index": 1})
+        self.assertAlmostEqual(hits[0][3], 1.0)
+
     def test_changed_query_can_rank_transaction_validation_first(self):
         output = StringIO()
-        with patch.object(demo, "QUERY", "both transactions settled"), redirect_stdout(output):
+        with (patch.object(demo, "QUERY", "both transactions settled"),
+              patch.object(demo, "load_model", return_value=FakeModel()),
+              redirect_stdout(output)):
             demo.main()
         sentence_results = output.getvalue().split("2) Sentence units", 1)[1].split("3)", 1)[0]
-        self.assertIn("word_overlap=3  refund-procedure-001:sentence-1", sentence_results.splitlines()[1])
+        self.assertIn("cosine_similarity=1.000  refund-procedure-001:sentence-1", sentence_results.splitlines()[1])
         self.assertNotIn("The top sentence chunk has the refund action and timing", output.getvalue())
         self.assertIn("vectors if embedded", output.getvalue())
 

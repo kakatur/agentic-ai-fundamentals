@@ -1,10 +1,9 @@
-"""Compare chunking strategies for one internal support-agent question.
+"""Compare chunking strategies using local embeddings and DuckDB search."""
 
-The demo counts distinct query words and prints text, metadata, and chunk IDs
-so learners can inspect what each strategy makes available to search.
-"""
-
+import json
 import re
+
+import duckdb
 
 from chunking import TextChunk, chunk_text
 
@@ -23,9 +22,15 @@ QUERY = (
 )
 
 
-def words(text: str) -> set[str]:
-    """Return lowercase word terms, ignoring punctuation."""
-    return set(re.findall(r"[a-z0-9]+", text.lower()))
+MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
+MODEL_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+
+
+def load_model():
+    """Load the local embedding model when the demo runs."""
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(MODEL_ID, revision=MODEL_REVISION)
 
 
 def procedure_metadata(source_id: str) -> dict[str, str]:
@@ -69,16 +74,57 @@ def paragraph_chunk(text: str, *, source_id: str) -> list[TextChunk]:
     )]
 
 
-def show_results(label: str, chunks: list[TextChunk], query_terms: set[str]) -> None:
-    ranked = sorted(
-        ((len(query_terms & words(chunk.text)), chunk) for chunk in chunks),
-        key=lambda item: (-item[0], item[1].chunk_id),
+def build_chunk_table(
+    connection: duckdb.DuckDBPyConnection,
+    chunks_by_strategy: list[tuple[str, list[TextChunk]]],
+    model,
+    dimension: int,
+) -> None:
+    """Embed each search chunk and keep its source fields beside the vector."""
+    connection.execute(
+        f"CREATE TABLE chunks (strategy VARCHAR, chunk_id VARCHAR, text VARCHAR, "
+        f"metadata_json VARCHAR, embedding FLOAT[{dimension}])"
     )
+    rows = []
+    for strategy, chunks in chunks_by_strategy:
+        vectors = model.encode_document([chunk.text for chunk in chunks])
+        for chunk, vector in zip(chunks, vectors, strict=True):
+            rows.append((
+                strategy, chunk.chunk_id, chunk.text,
+                json.dumps(chunk.metadata), vector.tolist(),
+            ))
+    connection.executemany("INSERT INTO chunks VALUES (?, ?, ?, ?, ?)", rows)
+
+
+def search_chunks(
+    connection: duckdb.DuckDBPyConnection,
+    strategy: str,
+    query_vector: list[float],
+    limit: int = 2,
+) -> list[tuple[str, str, dict, float]]:
+    """Rank stored vectors by exact cosine similarity to the query vector."""
+    dimension = len(query_vector)
+    rows = connection.execute(
+        f"SELECT chunk_id, text, metadata_json, "
+        f"array_cosine_similarity(embedding, ?::FLOAT[{dimension}]) AS score "
+        "FROM chunks WHERE strategy = ? ORDER BY score DESC, chunk_id LIMIT ?",
+        [query_vector, strategy, limit],
+    ).fetchall()
+    return [(chunk_id, text, json.loads(metadata), score)
+            for chunk_id, text, metadata, score in rows]
+
+
+def show_results(
+    label: str,
+    strategy: str,
+    connection: duckdb.DuckDBPyConnection,
+    query_vector: list[float],
+) -> None:
     print(f"\n{label}")
-    for score, chunk in ranked[:2]:
+    for chunk_id, text, metadata, score in search_chunks(connection, strategy, query_vector):
         print(
-            f"  word_overlap={score}  {chunk.chunk_id}: {chunk.text}"
-            f"  metadata={chunk.metadata}"
+            f"  cosine_similarity={score:.3f}  {chunk_id}: {text}"
+            f"  metadata={metadata}"
         )
 
 
@@ -105,29 +151,29 @@ def main() -> None:
     print(f"  {HEADING}")
     print(f"  {BODY}")
     print(f"\nAGENT QUERY: {QUERY}")
-    print("Score: number of distinct question words found in each chunk.")
+    print(f"Embedding model: {MODEL_ID}")
+    print("Score: cosine similarity between the query and stored chunk embeddings.")
 
-    query_terms = words(QUERY)
-    show_results(
-        "1) Fixed windows: 8 words, no overlap",
-        chunk_text(
+    chunks_by_strategy = [
+        ("fixed", chunk_text(
             BODY,
             source_id=SOURCE_ID,
             chunk_size=8,
             metadata=procedure_metadata(SOURCE_ID),
-        ),
-        query_terms,
-    )
-    show_results(
-        "2) Sentence units",
-        sentence_chunks(BODY, source_id=SOURCE_ID),
-        query_terms,
-    )
-    show_results(
-        "3) Paragraph with heading metadata (one section)",
-        paragraph_chunk(BODY, source_id=SOURCE_ID),
-        query_terms,
-    )
+        )),
+        ("sentence", sentence_chunks(BODY, source_id=SOURCE_ID)),
+        ("paragraph", paragraph_chunk(BODY, source_id=SOURCE_ID)),
+    ]
+    model = load_model()
+    query_vector = model.encode_query(QUERY).tolist()
+    with duckdb.connect(":memory:") as connection:
+        build_chunk_table(connection, chunks_by_strategy, model, len(query_vector))
+        for number, (strategy, label) in enumerate((
+            ("fixed", "Fixed windows: 8 words, no overlap"),
+            ("sentence", "Sentence units"),
+            ("paragraph", "Paragraph with heading metadata (one section)"),
+        ), start=1):
+            show_results(f"{number}) {label}", strategy, connection, query_vector)
     show_overlap_comparison(BODY, metadata=procedure_metadata(SOURCE_ID))
     print(
         "\nCompare which parts of the procedure each strategy keeps together. "
