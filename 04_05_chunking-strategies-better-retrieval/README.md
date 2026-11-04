@@ -2,7 +2,7 @@
 
 ## Learning outcome
 
-Compare fixed word windows, sentence chunks, and heading-plus-paragraph chunks. Inspect how each strategy changes the text available to vector similarity search, then choose a chunking strategy that keeps the evidence needed to answer an agent’s question.
+Compare fixed word windows, sentence chunks, and paragraph chunks with heading metadata. Inspect how each strategy changes the text available to vector similarity search, then choose a chunking strategy that keeps the evidence needed to answer an agent’s question.
 
 ## One refund procedure, three chunking strategies
 
@@ -17,11 +17,13 @@ While helping a customer, an agent searches: **“A customer was charged twice. 
 
 | Chunking strategy | What becomes one searchable record | What to inspect |
 |---|---|---|
-| Fixed word window | A fixed number of words, optionally repeated across neighboring windows | Does a chunk split separate the heading from the procedure? |
+| Fixed word window | A fixed number of words, optionally repeated across neighboring windows | Does a chunk split separate a condition, action, or timing from the rest of the procedure? |
 | Sentence | One sentence at a time | Does the matching sentence say which issue it applies to? |
-| Heading plus paragraph | A heading and its paragraph together | Does the larger record add useful context or unrelated text? |
+| Paragraph with heading metadata | The paragraph is searchable; the heading is carried separately as metadata | Does returned metadata preserve useful topic context? |
 
-Vector similarity search ranks embedded chunks against the agent’s question. Chunking determines what information each searchable record contains. For this procedure, a heading-plus-paragraph chunk gives search one candidate containing the topic, settlement condition, refund action, and timing; sentence chunks make each step available as a focused passage.
+Vector similarity search ranks embedded chunk text against the agent’s question. Chunking determines what information each searchable record contains. For this procedure, the paragraph chunk contains the settlement condition, refund action, and timing; its heading is carried separately as metadata and does not affect similarity unless the application also includes it in the embedding input.
+
+Each demo chunk carries `document_id`, `document_title`, `chunk_index`, and `section_heading` metadata. These fields identify and organize the source; the heading stays out of the searchable chunk text.
 
 The procedure is written for the agent, who uses it to help the customer. A retrieved passage should include enough of the internal instructions to guide the agent’s next steps.
 
@@ -31,23 +33,25 @@ In a retrieval system, distinguish the searched chunk from the context returned 
 - **Returned context:** the text passed to the application or language model after a match.
 - **Evaluation evidence:** the complete procedure needed to answer the question.
 
-These can differ. For example, embed a sentence as the search chunk, then use its parent section ID to return the full refund procedure as context. If multiple matched sentences point to that same section, return the section once. This keeps search focused while giving the agent the settlement check, refund action, and timing together.
+These can differ. For example, embed a sentence as the search chunk, then use its parent section ID to return the full refund procedure as context. If multiple matched sentences point to that same section, return the section once. This keeps search focused while giving the agent the transaction validation, refund action, and timing together.
 
 ## What the comparison teaches
 
 | Strategy | What this example preserves | What to consider |
 |---|---|---|
-| Fixed windows | Similar-sized records and a clear baseline | A chunk split can detach the heading from the action it describes |
+| Fixed windows | Similar-sized records and a clear baseline | A chunk split can separate the refund action from its timing |
 | Sentence chunks | Complete steps in concise search records | Carry the heading when it names the topic or condition |
-| Heading plus paragraph | The topic and its explanation in one record | Review how much of the section each question needs |
+| Paragraph with heading metadata | The full procedure in the text, with its topic label in metadata | Review how much of the section each question needs |
 | Overlapping windows | Repeated text across chunk splits | More vectors and potentially duplicate search results |
 | Parent-child retrieval | A focused match can return its containing section | Requires parent links and a context-return policy |
 
-Choose a strategy based on document structure and the details agents need to retrieve. For this example, a sentence chunk is precise but can lose its subject; the heading-plus-paragraph chunk keeps both subject and procedure. For longer manuals, carry heading paths and table headers into chunks or use parent sections to return the surrounding context. Check the embedding model's token limit before embedding each chunk.
+Choose a strategy based on document structure and the details agents need to retrieve. For this example, a sentence chunk is precise but can lose its subject; paragraph text keeps the full procedure together, while heading metadata preserves its topic label for the application. For longer manuals, carry heading paths and table headers into metadata or use parent sections to return the surrounding context. Check the embedding model's token limit before embedding each chunk.
 
-A quick quality check is to read a candidate chunk by itself: can the agent tell what topic it covers, what action to take, and what condition or timing matters? The settlement sentence states the condition; the heading-plus-paragraph chunk brings the topic, condition, and refund action together. Use this check to see how much of the procedure a passage makes clear.
+A quick quality check is to read a candidate chunk by itself: can the agent tell what topic it covers, what action to take, and what condition or timing matters? The transaction-validation sentence states the condition; the paragraph chunk keeps the procedure together, and its heading metadata preserves the topic label for the application. Use this check to see how much of the procedure a passage makes clear.
 
 ## Run the comparison
+
+Requires Python 3.10 or newer; the demo uses only the standard library.
 
 Run the demo from this directory:
 
@@ -55,15 +59,15 @@ Run the demo from this directory:
 python3 demo.py
 ```
 
-The program applies three strategies to the same internal procedure and agent question, prints the top two chunks for each, and reports how many question words appear in each chunk. Read each result beside its score to see which parts of the question and procedure the chunk contains. It then compares eight-word windows with no overlap and with a three-word overlap. For this procedure, overlap keeps “First, confirm that” at the start of the next chunk and increases the chunk count from four to six. The code also prints stable IDs and source word offsets for fixed windows.
+The program applies three strategies to the same internal procedure and agent question, prints up to two top-ranked chunks for each, and reports how many distinct question words appear in each chunk. Read each result beside its score and metadata to see which parts of the question and procedure the chunk contains. It then compares eight-word windows over the procedure body with no overlap and with a three-word overlap. For this procedure, the body forms three chunks without overlap and five with overlap. For fixed windows, the printed chunk IDs encode the start and exclusive end word offsets; the results also show document ID, document title, and chunk index metadata.
 
-With this example query, the top sentence chunk contains the refund action and timing but omits the settlement check. The heading-plus-paragraph result contains the topic, precondition, action, and timing together. That is the specific context trade-off to look for in your own documents.
+With this example query, the top sentence chunk contains the refund action and timing but omits the transaction validation. The paragraph result contains the validation, action, and timing together, while the heading is returned as metadata. That is the specific context trade-off to look for in your own documents.
 
-Try changing the fixed window size in `demo.py` and compare the returned text for the same agent question. For production, set the chunk token budget with the selected embedding model's tokenizer, then evaluate retrieved context, answer coverage, and latency on representative questions.
+Try changing `QUERY` in `demo.py` and rerun it to compare all three strategies with the same question. You can also change the fixed window size. The sentence splitter uses a simple punctuation rule for this example; production text may require a splitter that handles abbreviations and other language-specific boundaries. For production, set the chunk token budget with the selected embedding model's tokenizer, then evaluate retrieved context, answer coverage, and latency on representative questions.
 
 ## A small chunking implementation
 
-The reusable fixed-window baseline is in `chunking.py`. Its `chunk_text` function accepts source text, a stable source ID, a word-window size, and optional overlap. It returns chunk IDs and start/end word offsets. `demo.py` adds sentence and heading-plus-paragraph chunking to show how source structure changes the records.
+The reusable fixed-window baseline is in `chunking.py`. Its `chunk_text` function accepts source text, a stable source ID, a word-window size, optional overlap, and optional metadata. It returns chunk IDs, start/end word offsets, and metadata. `demo.py` adds sentence and paragraph chunking, carrying document titles and section headings as metadata.
 
 ```bash
 python3 demo.py
@@ -95,7 +99,7 @@ When chunking changes, create a separately versioned index from the original sou
 ## Practical checks
 
 - Set chunk budgets with the selected model's tokenizer.
-- Carry headings, list labels, and table headers into chunks that need that context.
+- Carry headings, list labels, and table headers as metadata or embedding input when chunks need that context.
 - Compare overlap using retrieval quality, duplicate result rate, and vector storage.
 - Return the parent section when a focused child match needs surrounding instructions.
 - Compare a versioned index with a fixed question set before using it for agent searches.
@@ -116,9 +120,15 @@ It repeats some text across chunk splits, which can preserve context. That incre
 
 ### Advanced
 
-**How would you choose a chunking strategy for an internal support application?**
+**What chunking strategies have you used, and what practical tips helped you choose and tune them?**
 
-Inspect the company documents’ headings, steps, tables, and the answers agents need; preserve links to source locations; then compare candidate strategies on questions affected by chunk splits, contextual completeness, duplicate result rate, latency, and storage.
+For fixed-size chunking, I split by the embedding model’s token budget and compare overlap settings, because overlap can preserve context across chunk boundaries, but also adds vectors and can crowd results with duplicates.
+
+For sentence-based chunking, I keep sentences intact for focused matches and preserve parent-section links so retrieval can return more context when needed.
+
+For structure-aware chunking, I follow headings, paragraphs, and section boundaries, but still check token counts because a well-structured section can exceed the model’s limit.
+
+I test them on realistic user questions and choose the approach that returns relevant, complete context within our storage and response-time limits.
 
 ## References
 
