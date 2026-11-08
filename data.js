@@ -209,10 +209,10 @@ window.MODULES = [
         url: "https://www.youtube.com/watch?v=9JLEkq_2VpI"
       },
       {
-        title: "Chunking Strategies for Better Retrieval",
-        description: "Preserve answer context with chunk boundaries, traceable records, and boundary-focused evaluation.",
-        duration: "6 min",
-        url: "PLACEHOLDER"
+        title: "Chunking Strategies for Vector Similarity Search",
+        description: "Compare fixed-size, sentence-based, and structure-aware chunking for vector search.",
+        duration: "9 min",
+        url: "https://www.youtube.com/watch?v=JOB-6XnTBbI"
       },
       {
         title: "Hybrid Search for RAG: Combining Vector and Keyword Search",
