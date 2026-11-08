@@ -1,106 +1,89 @@
-# 4.6 — Hybrid Search: When Meaning Misses the Exact Match
+# Hybrid Search for RAG: Combining Vector and Keyword Search
 
-## Learning outcome
+Build a small retrieval pipeline that searches support documents by meaning and by terms, then combines the two rankings. You will inspect the candidates and learn why a hybrid result still needs evaluation before it is supplied to a language model.
 
-Combine dense and lexical retrieval rankings with reciprocal rank fusion, apply the same eligibility rules to both branches, and test whether the combination improves the query types your users submit.
+## The problem
 
-## One query, two kinds of evidence
+A support question may say “my password reset link doesn't work” while the useful document says “the password reset token has expired.” Vector search can find a relationship even when the wording differs. Another question may contain `E104`, where the exact characters matter. Keyword search can find that identifier. Neither method guarantees relevance: a vector model can confuse similar topics, and a keyword match can miss a paraphrase.
 
-A support engineer searches for `error E104 after password reset`.
+Here, each record is a document with a stable ID, collection, and body. The example embeds the body with `sentence-transformers/all-MiniLM-L6-v2` and stores the resulting 384-dimensional vector in DuckDB with the text and model name. The query is encoded with the same model. DuckDB computes cosine similarity over its stored vectors; the model, not DuckDB, creates those vectors. DuckDB's full-text extension provides the BM25 ranking. The example uses an exact vector scan on a tiny corpus, not an approximate index.
 
-The phrase has a meaning: the user is troubleshooting account recovery. It also has an exact identifier: `E104` must remain intact. Dense retrieval can find a paraphrased password-reset explanation. Lexical retrieval can reward the rare error code. Either branch can miss the useful document on its own.
+## Follow the data
 
-Hybrid retrieval runs both branches, then combines their candidate rankings. It helps when the branches make complementary errors and the relevant result appears in at least one candidate list.
+1. `demo.py` creates the sample documents and encodes their text. `build` stores each vector with its ID, text, collection, and model, then creates a full-text index.
+2. For a query, `search` checks the model and applies the same collection filter to both searches. Vector search orders eligible rows by cosine similarity. Keyword search orders BM25 matches by score.
+3. Each search returns a limited list of candidates. `fuse` adds reciprocal rank contributions for each ID, and the demo prints the two search lists and the fused list. A document absent from both lists cannot appear in the final result.
 
-## Keep one eligibility boundary
+The corpus includes an internal document with an error code. The collection filter keeps it out of the support results. This illustrates consistent filtering, not a complete authorization system: a production service must enforce the caller's actual access policy before exposing results.
 
-Both branches must use the same tenant, permission, date, and metadata rules. If dense and lexical search see different eligible records, their ranks describe different result sets and fusion can surface an item the caller should not see.
+## How rank fusion works
 
-Apply eligibility before the branch results are fused. Deduplicate IDs before calculating the final list. Keep the source record and ID mapping so the returned result resolves to the current content.
+The BM25 and cosine scores are on different scales. Reciprocal rank fusion (RRF) combines rank positions instead of adding those raw numbers. For each candidate, add `1 / (k + rank)` for each list in which it appears. Ranks start at one. With `k = 60`, a document ranked first in one list and third in the other receives `1/61 + 1/63`, approximately `0.0323`. A missing candidate contributes zero for that search. Larger `k` makes differences between positions smaller. The example breaks score ties by document ID and counts an ID only once per search.
 
-## Why rank positions are useful
+RRF avoids directly comparing score scales but discards score gaps: it treats a narrow first-place lead and a large one alike. Candidate depth and `k` affect the output. Neither RRF nor hybrid search guarantees a better ranking for every query.
 
-A cosine score and a lexical score such as BM25 do not use the same scale. Adding their raw values gives whichever score happens to have larger numbers more influence.
+## Inspect the example
 
-Reciprocal rank fusion, or RRF, combines positions instead:
+Run the demo and compare the printed IDs and scores for each search. Their positions in each list show their ranks. The queries cover a paraphrase, an identifier, and a mixed query. Look at the original document text to decide whether the ordering makes sense. The model and its library versions can change the scores and ordering; do not treat these few examples as a benchmark.
 
-```text
-RRF(document) = sum over retrievers of weight / (constant + rank)
-```
+The validated demo produces these top results:
 
-A document's first-place rank contributes more than its tenth-place rank. The constant smooths the difference between rank positions. RRF ignores score gaps inside a branch, so it is simple to combine and easy to trace; it also discards information about how strongly a branch preferred one candidate over another.
+| Query | Vector search | Keyword search | Hybrid search using RRF |
+|---|---|---|---|
+| `My password reset link doesn't work` | `reset` | `reset` | `reset` |
+| `E104` | `e105` | `e104` | `e104` |
+| `E104 password reset link expired` | `e104` | `e104` | `e104` |
 
-## Work the E104 example
+For the code-only query, vector search puts `e104` second; keyword search finds it as its only match. Its RRF score is `1/62 + 1/61 ≈ 0.0325`, so hybrid search puts it first. This is the observed result for this corpus and model, not a general accuracy guarantee.
 
-Assume both retrievers use the same eligible records and return their top candidates. With equal weights and an illustrative constant of 10:
+The full-text index is a snapshot. Rebuild it when the source text changes; the demo replaces the corpus and index together. Its index configuration preserves digits so an identifier such as `E104` is not reduced to a letter. Tokenization still needs testing for real identifiers containing punctuation, case variations, or non-English text.
 
-| Document | Dense rank | Lexical rank | RRF calculation | RRF score |
-|---|---:|---:|---|---:|
-| Password-reset FAQ | 2 | 5 | 1/12 + 1/15 | 0.1500 |
-| E104 troubleshooting runbook | 6 | 1 | 1/16 + 1/11 | 0.1534 |
-| General account-access article | 1 | 8 | 1/11 + 1/18 | 0.1465 |
+## Move toward production
 
-The exact-code runbook moves to the top because lexical search ranked it first, while dense search still contributes evidence for the other candidates. The numbers are a worked example, not a default configuration. Choose the smoothing constant, branch weights, and candidate depths using a labeled query set.
+Create a labeled query set with paraphrases, identifiers, mixed questions, and difficult negatives. Compare keyword-only, vector-only, and hybrid results under the same eligibility rules, using metrics such as recall at the candidate cutoff and a ranking metric appropriate to your labels. Inspect regressions by query type along with latency and cost. Tune candidate depth and fusion settings on development queries and reserve separate queries for evaluation.
 
-A useful trace records each candidate's ID, eligibility decision, rank in each branch, contribution to the fused score, and final position. If a result is missing, ask whether it was absent from both branch lists, removed by an eligibility rule, or present but ranked too low after fusion.
+Version the embedding model, its revision, dimensions, and input construction. Re-embed when those change, and keep the text, vectors, and search indexes consistent. The exact scan is simple for a small local dataset; for larger or concurrent workloads, measure it and consider an indexed vector service or DuckDB's experimental VSS extension where its operational constraints fit. Apply access filters in both searches and test them independently. Retrieval is evidence selection, not proof that an answer is correct.
 
-## Implement the rank combination
+## Beyond the demo
 
-The lesson repository includes `hybrid.py`, whose `reciprocal_rank_fusion` function accepts ordered document-ID lists, a `rank_constant`, and optional branch `weights`. It assigns one-based ranks, counts a document at most once per branch, sums weighted reciprocal-rank contributions, and sorts by score with a stable ID tie-break.
+The demo returns ranked documents. A full chatbot can optionally rerank these results with a cross-encoder that reads the query and each candidate document together and assigns a new relevance score. The chatbot then supplies selected document text and the question to its language model to generate an answer. RRF combines existing rankings; a cross-encoder examines the actual text. The demo implements neither reranking nor answer generation.
 
-The accompanying `demo.py` uses the E104 worked rankings and prints the three named documents' scores:
+RRF is one way to combine results. OpenSearch's normalization processor also supports normalizing each search's scores and combining them with a weighted arithmetic mean. This lets you control how much each search influences the ranking. Choose the method and weights using representative queries. When keyword search returns nothing, RRF already preserves the vector results' order; a different fusion method alone does not supply missing evidence.
 
-```bash
-python3 demo.py
-python3 -m unittest -v
-```
-
-This combines already-filtered candidate lists. Apply authorization and metadata eligibility consistently before calling the fusion function; rank fusion cannot repair an access-control mismatch or recover a document absent from every candidate list.
-
-## Candidate depth limits the result
-
-Fusion cannot recover a document that neither branch returned. If the relevant runbook ranks below a branch's candidate limit, increase the candidate depth or improve that branch before tuning RRF. Deeper lists can increase search and fusion work, so compare quality and latency together.
-
-Evaluate at least three query slices:
-
-- **Semantic:** paraphrases with few shared terms.
-- **Identifier-heavy:** error codes, product names, SKUs, or exact phrases.
-- **Mixed:** queries that combine a concept with an exact token.
-
-Compare dense-only, lexical-only, and hybrid retrieval on the same records, filters, and labels. Reuse the workload card and labeled query set from Lesson 4.4, then add the chunking policy from Lesson 4.5. Hybrid search earns its complexity when it improves the slices that matter and meets the application's latency and operating limits; replay this final retrieval design in the backend evaluation before making a durable choice.
-
-## Common failure modes
-
-- Adding raw dense and lexical scores without a calibrated normalization policy.
-- Applying permissions in one retrieval branch but forgetting the other.
-- Letting duplicate records occupy several fused positions.
-- Fusing shallow candidate lists that never contained the answer.
-- Reporting one aggregate metric that hides a regression on identifier queries.
+When long documents are split into chunks, a chunk such as “Request a new reset link” may be separated from its product, version, or error code. Adding that source-grounded context before both embedding and BM25 indexing can make the chunk easier to find. Check the added context against the source document and evaluate the results. The small demo uses document snippets directly and does not implement chunking or contextual enrichment.
 
 ## Interview questions
 
-### Basic
+**Basic: Why combine vector and keyword search?** They capture different signals: similarity in embedding space and lexical matches. They can find complementary candidates, but their benefit depends on the data and queries.
 
-**When is hybrid search useful?**
+**Intermediate: Why use RRF?** It combines ranks without assuming BM25 and cosine scores have comparable scales. Its trade-off is that it ignores the magnitude of score differences.
 
-When dense and lexical retrieval find different relevant records, such as paraphrased meaning in one branch and exact identifiers in the other.
+**Advanced: How would you diagnose a missing relevant document?** Check access filters and indexing first, then each search's candidate list and cutoff, then fusion ranks. Evaluate on labeled query slices and measure latency before adjusting depth or weights.
 
-### Intermediate
+## Run and test
 
-**Why does reciprocal rank fusion avoid raw score addition?**
+Python 3 and network access are required for the initial package, model, and DuckDB extension downloads. The demo uses an in-memory DuckDB database. Each run builds the documents, embeddings, and full-text index; closing the connection discards them without creating a database file.
 
-It combines rank positions, so the two branches do not need their raw scores to share a numeric scale. It gives up information about the score gaps within each branch.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python demo.py
+python -m unittest -v
+```
 
-### Advanced
+Validation used Python 3.14.7, DuckDB 1.5.6, and sentence-transformers 5.7.0. The dependency ranges allow other versions; their scores and ordering may differ.
 
-**How would you decide whether hybrid search is worth operating?**
-
-Apply identical eligibility rules, compare dense-only, lexical-only, and fused results on semantic, identifier, and mixed query slices, then check relevance, candidate depth, latency, traceability, and maintenance cost.
+The tests use synthetic vectors to check fusion, filtering, and input validation without downloading the embedding model. The DuckDB full-text extension must be installed or available locally.
 
 ## References
 
-- Cormack, Clarke, and Büttcher, “Reciprocal Rank Fusion,” SIGIR 2009 — https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf
-- PostgreSQL full-text search introduction — https://www.postgresql.org/docs/current/textsearch-intro.html
-- pgvector hybrid search with PostgreSQL full-text search — https://github.com/pgvector/pgvector
-
-Documentation checked: 2026-10-04. Recheck version-sensitive implementation details before recording.
+- DuckDB full-text search and BM25: https://duckdb.org/docs/1.5/core_extensions/full_text_search
+- DuckDB array similarity: https://duckdb.org/docs/1.5/sql/functions/array
+- DuckDB VSS: https://duckdb.org/docs/1.5/core_extensions/vss
+- Sentence Transformers model: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+- Reciprocal rank fusion paper: https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf
+- DuckDB in-memory connections: https://duckdb.org/docs/1.5/clients/python/dbapi
+- OpenSearch normalization and weighted score combination: https://docs.opensearch.org/latest/search-plugins/search-pipelines/normalization-processor/
+- OpenSearch cross-encoder reranking: https://docs.opensearch.org/latest/search-plugins/search-pipelines/rerank-processor/
+- Anthropic contextual retrieval: https://www.anthropic.com/research/contextual-retrieval

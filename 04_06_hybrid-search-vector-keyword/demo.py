@@ -1,10 +1,28 @@
-from hybrid import reciprocal_rank_fusion
+"""Build a small support corpus and compare retrieval rankings."""
+from sentence_transformers import SentenceTransformer
+from hybrid import MODEL, build, connect, search
+
+DOCUMENTS = [
+    ("reset", "support", "Account recovery: reset your password using the link in the email."),
+    ("e104", "support", "Error E104: the password reset token has expired. Request a new reset link."),
+    ("e105", "support", "Error E105: your account is temporarily locked after too many login attempts."),
+    ("mfa", "support", "Replace a lost authentication device using your backup recovery codes."),
+    ("billing", "support", "Update the credit card used for your monthly subscription."),
+    ("private", "internal", "Error E104 internal investigation notes for administrators."),
+]
+QUERIES = ["My password reset link doesn't work", "E104", "E104 password reset link expired"]
 
 
-dense = ["general-access", "FAQ-reset"] + [f"dense-{n}" for n in range(3, 6)] + ["E104-runbook", "dense-7", "dense-8"]
-lexical = ["E104-runbook"] + [f"lexical-{n}" for n in range(2, 5)] + ["FAQ-reset", "lexical-6", "lexical-7", "general-access"]
-focus = {"FAQ-reset", "E104-runbook", "general-access"}
+def main():
+    model = SentenceTransformer(MODEL)
+    db = connect(":memory:")
+    build(db, DOCUMENTS, model.encode([d[2] for d in DOCUMENTS]))
+    for query in QUERIES:
+        query_embedding = model.encode(query)
+        dense, lexical, fused = search(db, query, query_embedding, "support")
+        print(f"\nQuery: {query}\n  vector: {dense}\n  keyword: {lexical}\n  fused: {fused}")
+    db.close()
 
-for document_id, score in reciprocal_rank_fusion([dense, lexical], rank_constant=10):
-    if document_id in focus:
-        print(f"{document_id}: {score:.4f}")
+
+if __name__ == "__main__":
+    main()

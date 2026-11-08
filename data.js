@@ -215,10 +215,10 @@ window.MODULES = [
         url: "PLACEHOLDER"
       },
       {
-        title: "Hybrid Search: Combining Semantic and Keyword Retrieval",
-        description: "Fuse dense and lexical rankings safely, then evaluate semantic, identifier, and mixed queries.",
-        duration: "6 min",
-        url: "PLACEHOLDER"
+        title: "Hybrid Search for RAG: Combining Vector and Keyword Search",
+        description: "Build hybrid search with DuckDB, compare vector and BM25 results, and combine rankings with reciprocal rank fusion.",
+        duration: "13 min",
+        url: "https://www.youtube.com/watch?v=yqRHm2NyKm0"
       }
     ]
   },

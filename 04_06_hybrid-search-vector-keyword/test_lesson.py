@@ -1,30 +1,37 @@
 import unittest
+from hybrid import DIMENSIONS, build, connect, fuse, search
 
-from hybrid import reciprocal_rank_fusion
+
+def vector(index):
+    v = [0.0] * DIMENSIONS
+    v[index] = 1.0
+    return v
 
 
-class ReciprocalRankFusionTests(unittest.TestCase):
-    def test_reciprocal_ranks_can_promote_complementary_evidence(self):
-        fused = reciprocal_rank_fusion(
-            [["faq", "other", "runbook"], ["runbook", "faq"]],
-            rank_constant=10,
-        )
-        self.assertEqual(fused[0][0], "faq")
-        self.assertEqual({item[0] for item in fused}, {"faq", "other", "runbook"})
+class HybridTests(unittest.TestCase):
+    def test_fusion_and_duplicates(self):
+        result = fuse([["a", "a", "b"], ["b", "a"]], k=0)
+        self.assertEqual([x[0] for x in result], ["a", "b"])
+        self.assertAlmostEqual(result[0][1], 1.5)
 
-    def test_duplicate_id_contributes_only_at_its_first_rank_per_branch(self):
-        fused = reciprocal_rank_fusion([["a", "a", "b"]], rank_constant=10)
-        scores = dict(fused)
-        self.assertAlmostEqual(scores["a"], 1 / 11)
-        self.assertAlmostEqual(scores["b"], 1 / 13)
+    def test_search_filters_and_model(self):
+        con = connect(":memory:")
+        build(con, [("a", "public", "E104 recovery"), ("b", "private", "E104 recovery")], [vector(0), vector(0)])
+        dense, lexical, fused = search(con, "E104", vector(0), "public")
+        for ranking in (dense, lexical, fused):
+            self.assertEqual([x[0] for x in ranking], ["a"])
+        self.assertEqual(search(con, "E104", vector(0), "missing"), ([], [], []))
+        with self.assertRaises(ValueError):
+            search(con, "E104", vector(0), "public", model="different")
+        con.close()
 
-    def test_weights_must_match_the_number_of_rankings(self):
-        with self.assertRaisesRegex(ValueError, "one weight"):
-            reciprocal_rank_fusion([["a"], ["b"]], weights=[1.0])
-
-    def test_weights_must_be_positive(self):
-        with self.assertRaisesRegex(ValueError, "positive"):
-            reciprocal_rank_fusion([["a"]], weights=[0.0])
+    def test_invalid_input(self):
+        con = connect(":memory:")
+        with self.assertRaises(ValueError):
+            build(con, [("a", "x", "text")], [])
+        with self.assertRaises(ValueError):
+            search(con, " ", vector(0), "x")
+        con.close()
 
 
 if __name__ == "__main__":
