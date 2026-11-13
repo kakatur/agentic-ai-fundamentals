@@ -11,11 +11,11 @@ window.MODULES = [
     playlistUrl: "https://www.youtube.com/playlist?list=PLcEtUFoF7ycg",
     videos: [
       {
-        title: "Python Basics for AI: Variables, Types & Control Flow",
-        description: "Learn Python fundamentals including variables, data types, control structures, and functions with practical AI examples.",
-        duration: "4 min",
-        url: "https://www.youtube.com/watch?v=Ct4fFvOF8as",
-        thumbnailUrl: "https://i.ytimg.com/vi/Ct4fFvOF8as/maxresdefault.jpg"
+        title: "Python Functions: Build a Text Processing Pipeline",
+        description: "Learn Python functions, conditions, and loops by building a text processing pipeline for an AI application. Clean support requests, create prompts, handle empty input, and test the results. The example runs locally and does not call an AI model.",
+        duration: "7 min",
+        url: "https://www.youtube.com/watch?v=W7Hdx057E08",
+        thumbnailUrl: "https://i.ytimg.com/vi/W7Hdx057E08/maxresdefault.jpg"
       },
       {
         title: "Object-Oriented Python: Classes, Inheritance & Pydantic",
