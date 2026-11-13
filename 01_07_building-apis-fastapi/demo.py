@@ -1,5 +1,9 @@
-from task_api import InMemoryTaskRepository, create_task_handler, list_tasks_handler
+from fastapi.testclient import TestClient
+from task_api import app
 
-repo = InMemoryTaskRepository()
-print(create_task_handler({'title': 'Review prompt', 'priority': 'high'}, repo))
-print(list_tasks_handler(repo))
+client = TestClient(app)
+for payload in ({'text': 'My order arrived'}, {'text': ''}):
+    response = client.post('/tasks', json=payload)
+    print('Request:', payload)
+    print('HTTP status:', response.status_code)
+    print('Response:', response.json())

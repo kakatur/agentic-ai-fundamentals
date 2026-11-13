@@ -1,30 +1,31 @@
 import asyncio
-
-import pytest
-
-from async_agent_calls import FakeModelClient, answer_many, answer_many_with_errors, answer_one, bounded_answer_many
-
-
-def test_answer_one_returns_model_result():
-    result = asyncio.run(answer_one(FakeModelClient(delay=0), "hello"))
-    assert result.answer == "HELLO"
+import unittest
+from unittest.mock import patch
+from async_agent_calls import concurrent, fetch_with_timeout, sequential
 
 
-def test_answer_many_preserves_prompt_order():
-    results = asyncio.run(answer_many(FakeModelClient(delay=0), ["a", "b", "c"]))
-    assert [item.answer for item in results] == ["A", "B", "C"]
+class AsyncTests(unittest.IsolatedAsyncioTestCase):
+    async def test_results_are_ordered(self):
+        self.assertEqual(await sequential(), ['orders: ready', 'shipping: ready'])
+        self.assertEqual(await concurrent(), ['orders: ready', 'shipping: ready'])
+
+    async def test_gather_starts_both_before_release(self):
+        started = []
+        release = asyncio.Event()
+        async def fake_fetch(name, delay):
+            started.append(name)
+            if len(started) == 2:
+                release.set()
+            await release.wait()
+            return name
+        with patch('async_agent_calls.fetch_source', side_effect=fake_fetch):
+            result = await asyncio.wait_for(concurrent(), timeout=1)
+        self.assertEqual(result, ['orders', 'shipping'])
+
+    async def test_timeout(self):
+        with self.assertRaises(TimeoutError):
+            await fetch_with_timeout(0.2, 0.01)
 
 
-def test_timeout_becomes_exception_when_requested():
-    results = asyncio.run(answer_many_with_errors(FakeModelClient(delay=0.05), ["slow"], timeout=0.001))
-    assert isinstance(results[0], TimeoutError)
-
-
-def test_bounded_answer_many_runs_all_prompts():
-    results = asyncio.run(bounded_answer_many(FakeModelClient(delay=0), ["a", "b", "c"], limit=2))
-    assert [item.prompt for item in results] == ["a", "b", "c"]
-
-
-def test_answer_many_raises_timeout_without_return_exceptions():
-    with pytest.raises(TimeoutError):
-        asyncio.run(answer_many(FakeModelClient(delay=0.05), ["slow"], timeout=0.001))
+if __name__ == '__main__':
+    unittest.main()

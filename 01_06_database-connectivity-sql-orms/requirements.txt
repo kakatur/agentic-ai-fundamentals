@@ -1,2 +1,1 @@
-SQLAlchemy>=2.0
-pytest>=8.0
+# Python 3.10 or newer; standard library only.

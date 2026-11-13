@@ -1,81 +1,44 @@
-    # Working with HTTP APIs using Requests
+# Python HTTP Requests: Call an API and Handle Errors
 
-    ## Core Concepts And Mental Model
+Send an HTTP GET request with query parameters, check its status, decode JSON, and validate a response field. The demo uses a simulated response and makes no network request; tests exercise success and failure paths.
 
-    AI systems are still ordinary Python programs at their boundaries. Prompts,
-    API payloads, files, database rows, and background jobs all arrive as
-    values that your code must name, validate, transform, and test.
+## Make the request
 
-    This lesson focuses on how to wrap API calls behind an injectable client with timeouts and retry policy. The goal is not to
-    memorize syntax. The goal is to recognize which Python construct gives the
-    next AI component a cleaner contract.
+`fetch_order` asks the client for `/orders`, passing the order ID through `params` and setting `timeout=5`. With Requests, that timeout is not a five-second limit on the entire response download; it limits waiting for network activity, and connection and read timeout behavior should be chosen for the application. Requests does not time out by default when no timeout is provided.
 
-    - `HTTP methods`: a Python tool this lesson uses to wrap API calls behind an injectable client with timeouts and retry policy.
-- `status codes`: a Python tool this lesson uses to wrap API calls behind an injectable client with timeouts and retry policy.
-- `timeouts`: a Python tool this lesson uses to wrap API calls behind an injectable client with timeouts and retry policy.
-- `retries`: a Python tool this lesson uses to wrap API calls behind an injectable client with timeouts and retry policy.
-- `authentication`: a Python tool this lesson uses to wrap API calls behind an injectable client with timeouts and retry policy.
+The offline demo prints the URL, parameters, and timeout it receives:
 
-    ## Important Design Implications
+```text
+GET: https://example.test/orders params: {'id': 'A17'} timeout: 5
+Response: {'status': 'shipped'}
+```
 
-    - Keep the boundary explicit. Convert raw input into a named object or
-      return value before passing it deeper into the system.
-    - Make invalid states hard to ignore. Raise a specific exception or return
-      a structured result instead of letting bad data drift forward.
-    - Prefer boring, testable code around AI calls. The unpredictable part is
-      the model; the surrounding Python should be easy to inspect.
-    - Separate transformation logic from side effects so tests can cover the
-      behavior without depending on network, database, or server state.
+`example.test` is an illustrative address. The demo's `FakeSession` supplies a simulated response rather than contacting it. In a real application, call `fetch_order` without the optional session and provide a real service URL.
 
-    ## Code Map And Implementation Guidance
+## Check status before using JSON
 
-    - `api_client.py` contains the focused implementation.
-    - `demo.py` runs the main workflow from the command line.
-    - `test_api_client.py` proves the important behavior and failure modes.
-    - `requirements.txt` lists optional runtime packages when the lesson uses
-      an ecosystem library.
+`response.raise_for_status()` raises `requests.HTTPError` for unsuccessful HTTP responses. Next, `response.json()` decodes the body; a successful JSON decode does not imply a successful HTTP status. Invalid JSON can raise `requests.exceptions.JSONDecodeError`. Finally, the function checks that the decoded data is a dictionary with a string `status`.
 
-    Read the implementation from the public function first, then inspect the
-    helper functions. That mirrors how the code should be used: one clear entry
-    point, small helpers, and tests for the branch or boundary that can break.
+A timeout or network error can also occur before a response arrives. This example lets these errors propagate so the caller can decide what to do. A production caller might report the error or retry a suitable operation; retries should account for whether repeating an operation is safe.
 
-    ## Real Production Considerations And Trade-Offs
+## Interview questions
 
-    Small Python choices become operational choices later. A dictionary is
-    flexible, but a named data object is easier to validate. A broad exception
-    handler can keep a script running, but it can also hide corrupted input. A
-    direct library call is fast to write, but an injectable wrapper is easier
-    to test and retry.
+- **Basic:** Why call `raise_for_status()`? It turns an unsuccessful HTTP status into an exception that the caller can handle.
+- **Intermediate:** Does `response.json()` prove a request succeeded? No. An error response can itself contain valid JSON; inspect the HTTP status separately.
+- **Advanced:** Is the Requests timeout a total deadline for the entire response? No. It controls connection and read waiting behavior rather than a total download deadline; choose appropriate limits for the application.
 
-    For AI applications, the practical rule is simple: make the non-model code
-    deterministic enough that model behavior is the thing you are actually
-    evaluating.
+## Run and test
 
-    ## Practical Tips And Common Mistakes
+Requires Python 3.10 or newer and Requests 2. The commands below show macOS/Linux activation.
 
-    - Name intermediate values when they describe a real concept.
-    - Keep functions small enough that one test can explain their contract.
-    - Validate inputs close to where they enter the program.
-    - Do not catch exceptions unless you can add useful context or recover.
-    - Avoid examples that only print output. Add assertions that lock in the
-      behavior you rely on.
-    - Keep demo code thinner than implementation code.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python demo.py
+python -m unittest -v
+```
 
-    ## Interview Questions
+Tests use a simulated client to check the URL, query parameters, timeout, unsuccessful status, timeout exception, malformed JSON, and invalid response shape. Verified with Requests 2.34.2.
 
-    Basic: Which Python construct in this lesson creates the clearest boundary
-    for the next component?
-
-    Intermediate: How would you test the failure mode without calling an
-    external service?
-
-    Advanced: What trade-off would make you replace the simple implementation
-    here with a framework, ORM, or service client?
-
-    ## Commands
-
-    ```bash
-    cd 01_05_working-with-http-apis-requests
-    python3 demo.py
-    python3 -m pytest
-    ```
+Reference: Requests quickstart [https://requests.readthedocs.io/en/latest/user/quickstart/].

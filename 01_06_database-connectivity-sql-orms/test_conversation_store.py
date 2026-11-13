@@ -1,31 +1,27 @@
-import pytest
-
-from conversation_store import ConversationStore, Message
-
-
-def test_store_round_trips_messages_in_order():
-    store = ConversationStore(":memory:")
-    store.add_message("c1", "user", "hello")
-    store.add_message("c1", "assistant", "hi")
-    assert store.list_messages("c1") == [
-        Message("c1", "user", "hello"),
-        Message("c1", "assistant", "hi"),
-    ]
+import sqlite3
+import unittest
+from conversation_store import add_messages, create_schema, get_messages
 
 
-def test_parameterized_query_treats_injection_as_text():
-    store = ConversationStore(":memory:")
-    store.add_message("safe", "user", "hello")
-    assert store.list_messages("safe' OR '1'='1") == []
+class StoreTests(unittest.TestCase):
+    def setUp(self):
+        self.db = sqlite3.connect(':memory:')
+        create_schema(self.db)
+
+    def tearDown(self):
+        self.db.close()
+
+    def test_conversation_isolation_and_order(self):
+        add_messages(self.db, "a' OR 1=1 --", [('user', 'one'), ('assistant', 'two')])
+        add_messages(self.db, 'other', [('user', 'private')])
+        self.assertEqual(get_messages(self.db, "a' OR 1=1 --"), [('user', 'one'), ('assistant', 'two')])
+        self.assertEqual(get_messages(self.db, 'missing'), [])
+
+    def test_invalid_row_rolls_back_batch(self):
+        with self.assertRaises(sqlite3.IntegrityError):
+            add_messages(self.db, 'a', [('user', 'one'), ('assistant', None)])
+        self.assertEqual(get_messages(self.db, 'a'), [])
 
 
-def test_invalid_role_fails_before_insert():
-    store = ConversationStore(":memory:")
-    with pytest.raises(ValueError):
-        store.add_message("c1", "admin", "hello")
-
-
-def test_search_content_uses_parameter_binding():
-    store = ConversationStore(":memory:")
-    store.add_message("c1", "user", "find the invoice")
-    assert store.search_content("invoice")[0].conversation_id == "c1"
+if __name__ == '__main__':
+    unittest.main()

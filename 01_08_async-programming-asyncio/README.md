@@ -1,81 +1,38 @@
-    # Async Programming with asyncio
+# Python asyncio: Run Independent AI Requests Concurrently
 
-    ## Core Concepts And Mental Model
+Use `async` and `await` to simulate two independent I/O operations, compare sequential and concurrent execution, and handle a timeout. The example uses `asyncio.sleep` to simulate waiting; it does not call an AI model or a remote API.
 
-    AI systems are still ordinary Python programs at their boundaries. Prompts,
-    API payloads, files, database rows, and background jobs all arrive as
-    values that your code must name, validate, transform, and test.
+## Coroutines and await
 
-    This lesson focuses on how to run independent I/O-bound tasks concurrently while preserving timeout boundaries. The goal is not to
-    memorize syntax. The goal is to recognize which Python construct gives the
-    next AI component a cleaner contract.
+`fetch_source` is declared with `async def`. Calling it creates a coroutine object; it runs when awaited or scheduled. It awaits `asyncio.sleep`, which suspends that coroutine and lets the event loop run other work while it waits.
 
-    - `async`: a Python tool this lesson uses to run independent I/O-bound tasks concurrently while preserving timeout boundaries.
-- `await`: a Python tool this lesson uses to run independent I/O-bound tasks concurrently while preserving timeout boundaries.
-- `gather`: a Python tool this lesson uses to run independent I/O-bound tasks concurrently while preserving timeout boundaries.
-- `timeouts`: a Python tool this lesson uses to run independent I/O-bound tasks concurrently while preserving timeout boundaries.
-- `cancellation`: a Python tool this lesson uses to run independent I/O-bound tasks concurrently while preserving timeout boundaries.
+`sequential` awaits the first simulated source before starting the second. Each waits 0.2 seconds, so the demo often takes around 0.4 seconds plus overhead. Actual times vary.
 
-    ## Important Design Implications
+## Run independent operations concurrently
 
-    - Keep the boundary explicit. Convert raw input into a named object or
-      return value before passing it deeper into the system.
-    - Make invalid states hard to ignore. Raise a specific exception or return
-      a structured result instead of letting bad data drift forward.
-    - Prefer boring, testable code around AI calls. The unpredictable part is
-      the model; the surrounding Python should be easy to inspect.
-    - Separate transformation logic from side effects so tests can cover the
-      behavior without depending on network, database, or server state.
+`concurrent` passes both coroutine objects to `asyncio.gather` and awaits the results. They can make progress while the other is waiting. Both waits are 0.2 seconds, so the local demo often takes around 0.2 seconds plus overhead. These numbers illustrate simulated waiting, not a benchmark or promise for real APIs. `gather` returns results in the order of its arguments, even if they finish in a different order.
 
-    ## Code Map And Implementation Guidance
+This pattern is useful when operations are independent and the libraries cooperate with the event loop. Async does not make blocking code nonblocking or automatically speed up CPU-bound work. Account for service limits and resource use when choosing concurrency.
 
-    - `async_agent_calls.py` contains the focused implementation.
-    - `demo.py` runs the main workflow from the command line.
-    - `test_async_agent_calls.py` proves the important behavior and failure modes.
-    - `requirements.txt` lists optional runtime packages when the lesson uses
-      an ecosystem library.
+## Handle a timeout
 
-    Read the implementation from the public function first, then inspect the
-    helper functions. That mirrors how the code should be used: one clear entry
-    point, small helpers, and tests for the branch or boundary that can break.
+`fetch_with_timeout` awaits `asyncio.wait_for`. If the simulated operation exceeds the limit, `wait_for` requests cancellation and raises `TimeoutError` after cancellation completes. The total time can exceed the nominal timeout while cancellation finishes. The demo catches the exception and reports the timeout. Cleanup should be designed for cancellation in real operations.
 
-    ## Real Production Considerations And Trade-Offs
+## Interview questions
 
-    Small Python choices become operational choices later. A dictionary is
-    flexible, but a named data object is easier to validate. A broad exception
-    handler can keep a script running, but it can also hide corrupted input. A
-    direct library call is fast to write, but an injectable wrapper is easier
-    to test and retry.
+- **Basic:** What does `await` do? It suspends the current coroutine while waiting for an awaitable, allowing the event loop to run other work.
+- **Intermediate:** How does `gather` order results? Successful results are returned in the same order as the supplied awaitables, not necessarily completion order.
+- **Advanced:** Does `asyncio.wait_for` always return exactly at its deadline? No. It requests cancellation on timeout and waits for cancellation to finish, so elapsed time may be longer.
 
-    For AI applications, the practical rule is simple: make the non-model code
-    deterministic enough that model behavior is the thing you are actually
-    evaluating.
+## Run and test
 
-    ## Practical Tips And Common Mistakes
+Requires Python 3.11 or newer; no third-party packages are needed.
 
-    - Name intermediate values when they describe a real concept.
-    - Keep functions small enough that one test can explain their contract.
-    - Validate inputs close to where they enter the program.
-    - Do not catch exceptions unless you can add useful context or recover.
-    - Avoid examples that only print output. Add assertions that lock in the
-      behavior you rely on.
-    - Keep demo code thinner than implementation code.
+```bash
+python3 demo.py
+python3 -m unittest -v
+```
 
-    ## Interview Questions
+Tests check result ordering, use an event to show both concurrent calls start before either is released, and exercise the timeout. The demo reports approximate elapsed times; expect variation.
 
-    Basic: Which Python construct in this lesson creates the clearest boundary
-    for the next component?
-
-    Intermediate: How would you test the failure mode without calling an
-    external service?
-
-    Advanced: What trade-off would make you replace the simple implementation
-    here with a framework, ORM, or service client?
-
-    ## Commands
-
-    ```bash
-    cd 01_08_async-programming-asyncio
-    python3 demo.py
-    python3 -m pytest
-    ```
+Reference: Python asyncio tasks [https://docs.python.org/3/library/asyncio-task.html].

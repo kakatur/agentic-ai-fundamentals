@@ -1,5 +1,12 @@
-from agent_models import AgentRequest, EchoAgent, ModeratedAgent
+from message_collections import count_by_role, make_history, sources_in_order
 
-request = AgentRequest(user_id='u-1', message='Summarize the release notes', priority='normal')
-for agent in [EchoAgent('echo'), ModeratedAgent('safe_echo')]:
-    print(agent.handle(request))
+messages = [
+    {"role": "user", "content": "Where is my order?"},
+    {"role": "assistant", "content": "What is your order number?"},
+    {"role": "user", "content": "A17"},
+    {"role": "assistant", "content": "It shipped today."},
+]
+sources = ["shipping", "returns", "shipping", "orders"]
+print("Recent messages:", make_history(messages))
+print("Role counts:", count_by_role(messages))
+print("Unique sources:", sources_in_order(sources))

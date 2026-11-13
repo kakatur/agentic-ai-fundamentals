@@ -1,24 +1,24 @@
-import pytest
-
-from task_api import InMemoryTaskRepository, create_task_handler, list_tasks_handler, validate_payload
-
-
-def test_validate_payload_checks_title_and_priority():
-    assert validate_payload({"title": " Build API ", "priority": "high"}) == ("Build API", "high")
-    with pytest.raises(ValueError):
-        validate_payload({"title": "x", "priority": "urgent"})
+import unittest
+from fastapi.testclient import TestClient
+from task_api import app, count_words
 
 
-def test_handlers_are_testable_without_http_server():
-    repo = InMemoryTaskRepository()
-    created = create_task_handler({"title": "Ship endpoint", "priority": "normal"}, repo)
-    assert created == {"id": 1, "title": "Ship endpoint", "priority": "normal", "done": False}
-    assert list_tasks_handler(repo) == [created]
+class TaskApiTests(unittest.TestCase):
+    def setUp(self):
+        self.client = TestClient(app)
+
+    def test_valid_request_and_output(self):
+        response = self.client.post('/tasks', json={'text': 'My order arrived'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'text': 'My order arrived', 'word_count': 3})
+
+    def test_invalid_request(self):
+        self.assertEqual(self.client.post('/tasks', json={'text': ''}).status_code, 422)
+        self.assertEqual(self.client.post('/tasks', json={}).status_code, 422)
+
+    def test_count_words_handles_whitespace(self):
+        self.assertEqual(count_words(' a\n b '), 2)
 
 
-def test_repository_returns_copy_not_internal_list():
-    repo = InMemoryTaskRepository()
-    repo.create("A", "low")
-    items = repo.list()
-    items.clear()
-    assert len(repo.list()) == 1
+if __name__ == '__main__':
+    unittest.main()

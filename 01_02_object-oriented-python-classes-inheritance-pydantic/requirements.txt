@@ -1,2 +1,1 @@
-pydantic>=2.8
-pytest>=8.0
+# Python 3.9 or newer; standard library only.

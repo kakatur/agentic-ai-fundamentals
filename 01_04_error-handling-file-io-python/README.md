@@ -1,81 +1,51 @@
-    # Error Handling & File I/O in Python
+# Parse JSON in Python: Turn AI Responses Into Usable Data
 
-    ## Core Concepts And Mental Model
+Parse a simulated response, validate its fields, handle two different failures, and save the result as JSON. The example uses local sample text and does not call an AI model. It applies the Pydantic validation introduced in Lesson 1.3.
 
-    AI systems are still ordinary Python programs at their boundaries. Prompts,
-    API payloads, files, database rows, and background jobs all arrive as
-    values that your code must name, validate, transform, and test.
+## Decode a response
 
-    This lesson focuses on how to load and validate small data files without hiding broken inputs. The goal is not to
-    memorize syntax. The goal is to recognize which Python construct gives the
-    next AI component a cleaner contract.
+```python
+raw = '{"category":"shipping","summary":"Order arrives tomorrow."}'
+data = json.loads(raw)
+```
 
-    - `exceptions`: a Python tool this lesson uses to load and validate small data files without hiding broken inputs.
-- `context managers`: a Python tool this lesson uses to load and validate small data files without hiding broken inputs.
-- `JSON`: a Python tool this lesson uses to load and validate small data files without hiding broken inputs.
-- `CSV`: a Python tool this lesson uses to load and validate small data files without hiding broken inputs.
-- `failure modes`: a Python tool this lesson uses to load and validate small data files without hiding broken inputs.
+`json.loads` converts JSON text into Python data. Here, `data` is a dictionary with two string values. Valid JSON can also decode to a list, number, string, Boolean, or `None`; successful decoding alone does not establish that the result has the fields your program needs.
 
-    ## Important Design Implications
+## Validate the expected shape
 
-    - Keep the boundary explicit. Convert raw input into a named object or
-      return value before passing it deeper into the system.
-    - Make invalid states hard to ignore. Raise a specific exception or return
-      a structured result instead of letting bad data drift forward.
-    - Prefer boring, testable code around AI calls. The unpredictable part is
-      the model; the surrounding Python should be easy to inspect.
-    - Separate transformation logic from side effects so tests can cover the
-      behavior without depending on network, database, or server state.
+`Response.model_validate(data)` checks the decoded value against the model. `category` must be `shipping`, `returns`, or `other`, and `summary` must be a nonempty string. Strict mode and forbidden extra fields make the boundary explicit. Like Lesson 1.3, this length check permits a whitespace-only summary; add another rule if needed.
 
-    ## Code Map And Implementation Guidance
+The valid response produces `response.category == "shipping"` and `response.summary == "Order arrives tomorrow."`. These checks establish the shape and allowed values, not whether an AI-generated summary is factually correct.
 
-    - `safe_file_pipeline.py` contains the focused implementation.
-    - `demo.py` runs the main workflow from the command line.
-    - `test_safe_file_pipeline.py` proves the important behavior and failure modes.
-    - `requirements.txt` lists optional runtime packages when the lesson uses
-      an ecosystem library.
+## Distinguish failures
 
-    Read the implementation from the public function first, then inspect the
-    helper functions. That mirrors how the code should be used: one clear entry
-    point, small helpers, and tests for the branch or boundary that can break.
+- Malformed JSON such as `{"category":` causes `json.JSONDecodeError`. The text cannot be decoded.
+- Valid JSON with the wrong structure or values, such as `{"category":"billing","summary":"Hi"}`, causes Pydantic `ValidationError`. The decoder succeeded, but the data did not meet the model.
 
-    ## Real Production Considerations And Trade-Offs
+The demo catches each separately and prints a clear message. Decide how to report or recover from errors in your application; do not silently treat malformed input as a valid response. Limit untrusted input size before parsing when appropriate.
 
-    Small Python choices become operational choices later. A dictionary is
-    flexible, but a named data object is easier to validate. A broad exception
-    handler can keep a script running, but it can also hide corrupted input. A
-    direct library call is fast to write, but an injectable wrapper is easier
-    to test and retry.
+## Save the result
 
-    For AI applications, the practical rule is simple: make the non-model code
-    deterministic enough that model behavior is the thing you are actually
-    evaluating.
+`save_response` converts the validated model to a Python dictionary with `model_dump()`, then uses `json.dumps(..., indent=2)` to create JSON text and `Path.write_text` to save it. The demo uses a temporary directory and reads the file back, leaving no permanent result file. The function overwrites an existing destination; choose a different write strategy if that matters.
 
-    ## Practical Tips And Common Mistakes
+## Interview questions
 
-    - Name intermediate values when they describe a real concept.
-    - Keep functions small enough that one test can explain their contract.
-    - Validate inputs close to where they enter the program.
-    - Do not catch exceptions unless you can add useful context or recover.
-    - Avoid examples that only print output. Add assertions that lock in the
-      behavior you rely on.
-    - Keep demo code thinner than implementation code.
+- **Basic:** What is the difference between `json.loads` and `json.dumps`? `loads` decodes JSON text into Python data; `dumps` encodes Python data into JSON text.
+- **Intermediate:** Does successful JSON parsing guarantee the fields are suitable for the application? No. Parsing checks JSON syntax, while a model can check the required shape and values.
+- **Advanced:** Why distinguish a `JSONDecodeError` from a validation error? The first indicates malformed JSON; the second indicates data that parsed but did not satisfy the model. They can require different handling.
 
-    ## Interview Questions
+## Run and test
 
-    Basic: Which Python construct in this lesson creates the clearest boundary
-    for the next component?
+Requires Python 3.10 or newer and Pydantic 2. The demo uses only local data.
 
-    Intermediate: How would you test the failure mode without calling an
-    external service?
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python demo.py
+python -m unittest -v
+```
 
-    Advanced: What trade-off would make you replace the simple implementation
-    here with a framework, ORM, or service client?
+Try an unsupported category, missing summary, and malformed JSON. Compare the errors. Verified with Pydantic 2.14.3.
 
-    ## Commands
-
-    ```bash
-    cd 01_04_error-handling-file-io-python
-    python3 demo.py
-    python3 -m pytest
-    ```
+References: Python JSON [https://docs.python.org/3/library/json.html]; Pydantic models [https://docs.pydantic.dev/latest/concepts/models/].

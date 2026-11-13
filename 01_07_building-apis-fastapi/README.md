@@ -1,81 +1,45 @@
-    # Building APIs with FastAPI
+# Build and Test a Python API With FastAPI
 
-    ## Core Concepts And Mental Model
+Build a local FastAPI endpoint that accepts text and returns its word count. Test a valid request and invalid input with FastAPI's `TestClient`; the demo does not start a network server or call an AI model.
 
-    AI systems are still ordinary Python programs at their boundaries. Prompts,
-    API payloads, files, database rows, and background jobs all arrive as
-    values that your code must name, validate, transform, and test.
+## Define the request and response
 
-    This lesson focuses on how to separate API handlers from business logic so endpoints are easy to test. The goal is not to
-    memorize syntax. The goal is to recognize which Python construct gives the
-    next AI component a cleaner contract.
+`TaskRequest` requires a `text` string with at least one character. `TaskResponse` defines the returned text and integer `word_count`. The minimum length check rejects an empty string but accepts whitespace-only text; `count_words` returns zero for whitespace. If that is not suitable for an application, add a validation rule.
 
-    - `routes`: a Python tool this lesson uses to separate API handlers from business logic so endpoints are easy to test.
-- `request models`: a Python tool this lesson uses to separate API handlers from business logic so endpoints are easy to test.
-- `dependency injection`: a Python tool this lesson uses to separate API handlers from business logic so endpoints are easy to test.
-- `response codes`: a Python tool this lesson uses to separate API handlers from business logic so endpoints are easy to test.
-- `OpenAPI`: a Python tool this lesson uses to separate API handlers from business logic so endpoints are easy to test.
+## Create the endpoint
 
-    ## Important Design Implications
+`@app.post('/tasks', response_model=TaskResponse)` registers a POST route. FastAPI parses and validates the request body, calls `create_task` with a `TaskRequest`, and uses the response model for the output. The route delegates counting to the plain Python function `count_words`, which splits on whitespace.
 
-    - Keep the boundary explicit. Convert raw input into a named object or
-      return value before passing it deeper into the system.
-    - Make invalid states hard to ignore. Raise a specific exception or return
-      a structured result instead of letting bad data drift forward.
-    - Prefer boring, testable code around AI calls. The unpredictable part is
-      the model; the surrounding Python should be easy to inspect.
-    - Separate transformation logic from side effects so tests can cover the
-      behavior without depending on network, database, or server state.
+For `{"text": "My order arrived"}`, the result is HTTP 200 with:
 
-    ## Code Map And Implementation Guidance
+```json
+{"text": "My order arrived", "word_count": 3}
+```
 
-    - `task_api.py` contains the focused implementation.
-    - `demo.py` runs the main workflow from the command line.
-    - `test_task_api.py` proves the important behavior and failure modes.
-    - `requirements.txt` lists optional runtime packages when the lesson uses
-      an ecosystem library.
+An empty string or missing `text` produces HTTP 422 for this endpoint before the route processes the request. The example has no authentication, persistence, or AI model integration; those require separate design.
 
-    Read the implementation from the public function first, then inspect the
-    helper functions. That mirrors how the code should be used: one clear entry
-    point, small helpers, and tests for the branch or boundary that can break.
+## Test without a network server
 
-    ## Real Production Considerations And Trade-Offs
+The demo creates `TestClient(app)` and calls `client.post('/tasks', json=payload)`. It prints each request, status, and response. Tests assert the successful response and invalid-request status. The client exercises the app locally; it does not prove network-server or deployment behavior. An ASGI server such as Uvicorn is needed to serve real network traffic.
 
-    Small Python choices become operational choices later. A dictionary is
-    flexible, but a named data object is easier to validate. A broad exception
-    handler can keep a script running, but it can also hide corrupted input. A
-    direct library call is fast to write, but an injectable wrapper is easier
-    to test and retry.
+## Interview questions
 
-    For AI applications, the practical rule is simple: make the non-model code
-    deterministic enough that model behavior is the thing you are actually
-    evaluating.
+- **Basic:** What does a route do? It maps an HTTP method and path to a handler.
+- **Intermediate:** Why use a request model? It describes the expected input and lets FastAPI validate it before the handler uses it.
+- **Advanced:** What does a `TestClient` test leave unverified? It can exercise the application locally but does not establish network, reverse proxy, authentication, or deployment behavior.
 
-    ## Practical Tips And Common Mistakes
+## Run and test
 
-    - Name intermediate values when they describe a real concept.
-    - Keep functions small enough that one test can explain their contract.
-    - Validate inputs close to where they enter the program.
-    - Do not catch exceptions unless you can add useful context or recover.
-    - Avoid examples that only print output. Add assertions that lock in the
-      behavior you rely on.
-    - Keep demo code thinner than implementation code.
+Requires Python 3.10 or newer. These commands use the tested FastAPI and TestClient dependencies; activation shown for macOS/Linux.
 
-    ## Interview Questions
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python demo.py
+python -m unittest -v
+```
 
-    Basic: Which Python construct in this lesson creates the clearest boundary
-    for the next component?
+Try a valid string, an empty string, and a missing `text` field. Verified with FastAPI 0.162.4 and httpx2 2.16.0.
 
-    Intermediate: How would you test the failure mode without calling an
-    external service?
-
-    Advanced: What trade-off would make you replace the simple implementation
-    here with a framework, ORM, or service client?
-
-    ## Commands
-
-    ```bash
-    cd 01_07_building-apis-fastapi
-    python3 demo.py
-    python3 -m pytest
-    ```
+References: FastAPI testing [https://fastapi.tiangolo.com/tutorial/testing/]; Starlette TestClient [https://www.starlette.dev/testclient/].

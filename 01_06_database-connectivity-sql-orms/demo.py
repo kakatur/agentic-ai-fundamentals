@@ -1,6 +1,11 @@
-from conversation_store import ConversationStore
+import sqlite3
+from conversation_store import add_messages, create_schema, get_messages
 
-store = ConversationStore(':memory:')
-store.add_message('c1', 'user', 'hello')
-store.add_message('c1', 'assistant', 'hi')
-print(store.list_messages('c1'))
+connection = sqlite3.connect(':memory:')
+try:
+    create_schema(connection)
+    add_messages(connection, 'order-A17', [('user', 'Where is my order?'), ('assistant', 'It shipped today.')])
+    print('Conversation order-A17:', get_messages(connection, 'order-A17'))
+    print('Other conversation:', get_messages(connection, 'other'))
+finally:
+    connection.close()

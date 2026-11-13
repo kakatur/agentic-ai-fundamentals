@@ -1,81 +1,42 @@
-    # Database Connectivity: SQL & ORMs
+# Python and SQLite: Save and Retrieve Conversation History
 
-    ## Core Concepts And Mental Model
+Store conversation messages in SQLite, retrieve one conversation in insertion order, and test that a failed batch rolls back. The demo uses an in-memory database and makes no AI model call.
 
-    AI systems are still ordinary Python programs at their boundaries. Prompts,
-    API payloads, files, database rows, and background jobs all arrive as
-    values that your code must name, validate, transform, and test.
+## Create and use a database
 
-    This lesson focuses on how to store and query conversation messages with parameterized SQL. The goal is not to
-    memorize syntax. The goal is to recognize which Python construct gives the
-    next AI component a cleaner contract.
+`sqlite3.connect(':memory:')` creates an in-memory database for this connection. It disappears when the connection closes. `create_schema` creates a `messages` table with an integer primary key, conversation ID, role, and content. The `NOT NULL` fields reject missing SQL values. The demo explicitly closes the connection in a `finally` block; a connection context manager handles transactions but does not itself close the connection.
 
-    - `connections`: a Python tool this lesson uses to store and query conversation messages with parameterized SQL.
-- `SQL parameters`: a Python tool this lesson uses to store and query conversation messages with parameterized SQL.
-- `transactions`: a Python tool this lesson uses to store and query conversation messages with parameterized SQL.
-- `repository pattern`: a Python tool this lesson uses to store and query conversation messages with parameterized SQL.
-- `ORM trade-offs`: a Python tool this lesson uses to store and query conversation messages with parameterized SQL.
+## Insert a batch with parameters
 
-    ## Important Design Implications
+`add_messages` uses `executemany` and `?` placeholders to bind each conversation ID, role, and message separately from the SQL text. For example, a conversation ID containing quotes is still treated as a value. Placeholders bind values, not table or column names.
 
-    - Keep the boundary explicit. Convert raw input into a named object or
-      return value before passing it deeper into the system.
-    - Make invalid states hard to ignore. Raise a specific exception or return
-      a structured result instead of letting bad data drift forward.
-    - Prefer boring, testable code around AI calls. The unpredictable part is
-      the model; the surrounding Python should be easy to inspect.
-    - Separate transformation logic from side effects so tests can cover the
-      behavior without depending on network, database, or server state.
+The `with connection` block commits on success or rolls back on an exception when a transaction is open. The example uses the default connection transaction mode, explicitly commits schema creation first, and has no earlier uncommitted work. A test supplies a `None` content value after a valid row: the constraint raises `IntegrityError`, and neither row remains.
 
-    ## Code Map And Implementation Guidance
+## Retrieve one conversation
 
-    - `conversation_store.py` contains the focused implementation.
-    - `demo.py` runs the main workflow from the command line.
-    - `test_conversation_store.py` proves the important behavior and failure modes.
-    - `requirements.txt` lists optional runtime packages when the lesson uses
-      an ecosystem library.
+`get_messages` binds the conversation ID and orders results by `id`. For the demo, it returns:
 
-    Read the implementation from the public function first, then inspect the
-    helper functions. That mirrors how the code should be used: one clear entry
-    point, small helpers, and tests for the branch or boundary that can break.
+```text
+[('user', 'Where is my order?'), ('assistant', 'It shipped today.')]
+```
 
-    ## Real Production Considerations And Trade-Offs
+A different conversation ID returns an empty list. Ordering by ID makes the selected order explicit; without an `ORDER BY`, do not rely on a particular row order. This example is deliberately local and has no user authentication or authorization layer.
 
-    Small Python choices become operational choices later. A dictionary is
-    flexible, but a named data object is easier to validate. A broad exception
-    handler can keep a script running, but it can also hide corrupted input. A
-    direct library call is fast to write, but an injectable wrapper is easier
-    to test and retry.
+## Interview questions
 
-    For AI applications, the practical rule is simple: make the non-model code
-    deterministic enough that model behavior is the thing you are actually
-    evaluating.
+- **Basic:** Why use placeholders in SQL? They bind data values separately from SQL text and avoid building queries by interpolating untrusted values.
+- **Intermediate:** What does the connection context manager do? With an open transaction, it commits on successful exit and rolls back on an exception; it does not close the connection.
+- **Advanced:** Why specify `ORDER BY` when reading history? SQL does not guarantee a result order without it. The application must choose a stable ordering that matches its needs.
 
-    ## Practical Tips And Common Mistakes
+## Run and test
 
-    - Name intermediate values when they describe a real concept.
-    - Keep functions small enough that one test can explain their contract.
-    - Validate inputs close to where they enter the program.
-    - Do not catch exceptions unless you can add useful context or recover.
-    - Avoid examples that only print output. Add assertions that lock in the
-      behavior you rely on.
-    - Keep demo code thinner than implementation code.
+Requires Python 3.10 or newer; no third-party packages are needed.
 
-    ## Interview Questions
+```bash
+python3 demo.py
+python3 -m unittest -v
+```
 
-    Basic: Which Python construct in this lesson creates the clearest boundary
-    for the next component?
+Try adding a third message or an invalid `None` content value. Compare the stored results with the tests. The in-memory example does not persist after the connection closes.
 
-    Intermediate: How would you test the failure mode without calling an
-    external service?
-
-    Advanced: What trade-off would make you replace the simple implementation
-    here with a framework, ORM, or service client?
-
-    ## Commands
-
-    ```bash
-    cd 01_06_database-connectivity-sql-orms
-    python3 demo.py
-    python3 -m pytest
-    ```
+Reference: Python sqlite3 [https://docs.python.org/3/library/sqlite3.html].

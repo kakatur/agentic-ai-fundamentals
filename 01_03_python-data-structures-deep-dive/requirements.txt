@@ -1,1 +1,1 @@
-pytest>=8.0
+pydantic>=2,<3
